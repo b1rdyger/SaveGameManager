@@ -4,9 +4,9 @@ from watchdog.observers import Observer
 
 class FileCreatedObserver:
 
-    def __init__(self, save_game_path: str, backup_func):
+    def __init__(self, save_game_path: str, backup_func, ignored_files_list):
         self.save_game_path = save_game_path
-        self.my_event_handler = Handler(backup_func)
+        self.my_event_handler = Handler(backup_func, ignored_files_list)
         self.my_observer = None
         self.init_observer()
 
@@ -30,11 +30,14 @@ class FileCreatedObserver:
 
 class Handler(FileSystemEventHandler):
 
-    def __init__(self, backup_func):
+    def __init__(self, backup_func, ignored_files_list):
         self.backup_func = backup_func
+        self.ignored_files_list = ignored_files_list
 
     def on_any_event(self, event):
         if event.is_directory:
             return None
         elif event.event_type == 'created':
-            self.backup_func()
+            filename = event.src_path.split('\\')[-1]
+            if filename not in self.ignored_files_list:
+                self.backup_func()

@@ -27,7 +27,7 @@ class Engine:
 
         self.event_bus: EventBus = EventBus()
 
-        self.fch = FileCopyHero(self.event_bus, self.hidden_tag_file)
+        self.fch = FileCopyHero(self.event_bus, self.hidden_tag_file, self.config.get('ignored_files'))
 
         self.fch.set_from_path(self.config.get('common_save_dir'))
 

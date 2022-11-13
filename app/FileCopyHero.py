@@ -25,10 +25,11 @@ class FileCopyHero:
     log: callable = None
     last_saved_or_restored_filename: str = None
 
-    def __init__(self, event_bus, hidden_tag_file):
+    def __init__(self, event_bus, hidden_tag_file, ignored_files):
         self.fco = None
         self._event_bus = event_bus
         self.hidden_tag_file = hidden_tag_file
+        self.ignored_files = ignored_files
 
     def set_console_write_callback(self, write_callback: callable):
         self.log = write_callback
@@ -41,7 +42,7 @@ class FileCopyHero:
 
     def set_from_path(self, save_from: str):
         self.save_from = fr'{save_from}'
-        self.fco = FileCreatedObserver(self.save_from, self.smart_backup)
+        self.fco = FileCreatedObserver(self.save_from, self.smart_backup, self.ignored_files)
 
     def add_save_block(self, save_to: SaveToBlock):
         self.save_to_list.append(save_to)
