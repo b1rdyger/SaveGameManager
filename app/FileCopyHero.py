@@ -1,5 +1,4 @@
 import glob
-import logging
 import os
 import shutil
 import time
@@ -8,6 +7,7 @@ from pathlib import Path
 
 from app.FileCreatedObserver import FileCreatedObserver
 from app.SGMEvents.FCEEvents import FCHCannotUse, FCHRestored
+from app.global_logging import *
 
 
 @dataclass
@@ -23,6 +23,7 @@ class FileCopyHero:
     save_from: str = None
     save_to_list: list[SaveToBlock] = []
     log: callable = None
+    last_saved_or_restored_filename: str = None
 
     def __init__(self, event_bus, hidden_tag_file):
         self.fco = None
@@ -39,7 +40,7 @@ class FileCopyHero:
             logging.info(txt)
 
     def set_from_path(self, save_from: str):
-        self.save_from = save_from
+        self.save_from = fr'{save_from}'
         self.fco = FileCreatedObserver(self.save_from, self.smart_backup)
 
     def add_save_block(self, save_to: SaveToBlock):
@@ -69,6 +70,7 @@ class FileCopyHero:
                 time.sleep(0.2)
                 self.smart_backup(tryy-1)
 
+    # noinspection PyTypeChecker
     def restore_last_save_from_backup(self) -> bool:
         first_backup_block = next(iter(self.save_to_list or []), None)
         if not first_backup_block:
@@ -76,7 +78,6 @@ class FileCopyHero:
         files = list(filter(os.path.isfile, glob.glob(str(first_backup_block.path) + "\\*")))
         files = list(map(lambda f: {'file': f, 'mtime': os.path.getmtime(f)}, files))
         files = sorted(files, key=lambda d: d['mtime'], reverse=True)
-
         split_dt = 59
         dts = (d0['mtime']-d1['mtime'] for d0, d1 in zip(files, files[1:]))
         split_at = [i for i, dt in enumerate(dts, 1) if dt >= split_dt]
@@ -85,8 +86,9 @@ class FileCopyHero:
         for savegame in groups[0]:
             savegame_filename_only = savegame['file'].split('\\')[-1]
             try:
-                shutil.copy(f'{savegame["file"]}', f'{self.save_from}')
+                shutil.copy2(f'{savegame["file"]}', f'{self.save_from}')
                 self.console_log(f'[file:{savegame_filename_only}] successfully restored')
+                self.last_saved_or_restored_filename = savegame_filename_only
                 self._event_bus.emit(FCHRestored)
             except Exception as e:
                 self.console_log(f'[error:{savegame_filename_only}] was not restored')
@@ -101,7 +103,12 @@ class FileCopyHero:
                     self._event_bus.emit(FCHCannotUse, save_to.path)
                     continue
             for file in files:
-                shutil.copy(f'{self.save_from}{os.sep}{file}', f'{save_to.path}')
+                if self.hidden_tag_file not in file:
+                    shutil.copy2(f'{self.save_from}{os.sep}{file}', f'{save_to.path}')
+                    time.sleep(0.1)
+                    os.remove(f'{self.save_from}{os.sep}{file}')
+                    self.console_log(f'[highlighted:Smart backup {file}]')
+
 
     def backup_for_symlink(self) -> bool:
         first_backup_path = next(iter(self.save_to_list or []), None)
@@ -116,7 +123,7 @@ class FileCopyHero:
             if files_in_save not in [None, '']:
                 for file_name in files_in_save:
                     if file_name != self.hidden_tag_file:
-                        shutil.copy(os.path.join(self.save_from, file_name), first_backup_path)
+                        shutil.copy2(os.path.join(self.save_from, file_name), first_backup_path)
                         time.sleep(0.3)
                         os.remove(os.path.join(self.save_from, file_name))
             os.rmdir(self.save_from)

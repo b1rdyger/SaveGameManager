@@ -1,9 +1,10 @@
-from app import EventBus
-from app.SGMEvents.PCEvents import PCRunning
 import threading
 import time
 
 from psutil import NoSuchProcess, AccessDenied, process_iter
+
+from app import EventBus
+from app.SGMEvents.PCEvents import PCRunning
 
 
 class ProcessChecker:

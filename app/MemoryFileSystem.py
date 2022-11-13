@@ -1,7 +1,5 @@
 import os
-import shutil
 import string
-import time
 from ctypes import windll
 
 import numpy as np

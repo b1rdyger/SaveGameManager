@@ -1,16 +1,14 @@
-import json
 import os
 import subprocess
 import threading
 import tkinter as tk
-from tkinter import Menu, ttk, LEFT, RIGHT, DISABLED, NORMAL
+from tkinter import Menu, ttk, DISABLED, NORMAL
 from tkinter import N, S, W, E
 from tkinter.ttk import Scrollbar
 
 from PIL import ImageTk, Image
 
 from app import Engine
-from app.SGMEvents.GuiEvents import SGMStop
 from app.SGMEvents.MFSEvents import *
 from app.SGMEvents.PCEvents import PCRunning
 from app.widgets.ConsoleOutput import ConsoleOutput
@@ -121,7 +119,7 @@ class SaveGameWindow:
         self.frame_game.rowconfigure(1, weight=0, minsize=40)
         self.frame_game.columnconfigure(0, weight=1)
         self.frame_game.columnconfigure(1, weight=0)
-        self.btn_start_game = ttk.Button(self.frame_game, text='Start Game!', command=lambda: self.start_dsp)
+        self.btn_start_game = ttk.Button(self.frame_game, text='Start Game!', command=lambda: self.start_dsp())
         self.btn_start_game.grid(row=0, column=1, sticky=N + S + E + W, ipadx=3, ipady=3)
         btn_change_game = ttk.Button(self.frame_game, text='Exit!',
                                      command=lambda: threading.Thread(target=self.on_closing, daemon=True).start())
