@@ -50,7 +50,7 @@ class SaveGameWindow:
         self.root.geometry('732x382')
         self.root.title('Savegame Manager')
         self.root.iconphoto(False, tk.PhotoImage(file=f'{self.asset_dir}logo{os.sep}disk1-256.png'))
-
+        self.width, self.height = self.root.winfo_width(), self.root.winfo_height()
         # setup layout
         self.generate_menu()
         self.configure_grid_weights()
@@ -89,15 +89,15 @@ class SaveGameWindow:
         _frame_log = tk.Frame(self.root, bg=self.frame_bg, padx=3, pady=2)
         _frame_log.grid(row=2, column=0, columnspan=2, sticky=N+S+E+W, ipadx=2, ipady=1, padx=2, pady=2)
 
-        text_log = ConsoleOutput(self.root_dir, self.event_bus, _frame_log)
-        text_log.pack(expand=True, fill='both')
-        scroll = Scrollbar(_frame_log, command=text_log.yview)
-        text_log.configure(yscrollcommand=scroll.set)
+        self.text_log = ConsoleOutput(self.root_dir, self.event_bus, _frame_log)
+        self.text_log.pack(expand=True, fill='both')
+        scroll = Scrollbar(_frame_log, command=self.text_log.yview)
+        self.text_log.configure(yscrollcommand=scroll.set)
 
         # btn_start = tk.Button(self.root, text='Start Game', bd=2, command=self.root.destroy, bg='red')
 
         # running
-        self.engine.set_write_callback(text_log)
+        self.engine.set_write_callback(self.text_log)
         cu1 = threading.Thread(target=self.engine.main_runner, daemon=True)
         cu1.start()
 
@@ -124,6 +124,7 @@ class SaveGameWindow:
         btn_change_game = ttk.Button(self.frame_game, text='Exit!',
                                      command=lambda: threading.Thread(target=self.on_closing, daemon=True).start())
         btn_change_game.grid(row=0, column=2, sticky=N + S + E + W, ipadx=3, ipady=3)
+        self.root.bind("<Configure>", self.resize)
         # label_profile = tk.Label(frame_game, text='Dyson Sphere Program', compound='left', image=logo,
         #                          anchor=W, justify=LEFT)
         # label_profile.grid(row=0, column=0, sticky=W)
@@ -134,6 +135,12 @@ class SaveGameWindow:
         self.root.rowconfigure(0, weight=0)
         self.root.rowconfigure(1, weight=0)
         self.root.rowconfigure(2, weight=1)
+
+    def resize(self, event):
+        if (event.widget == self.root and
+                (self.width != event.width or self.height != event.height)):
+            self.text_log.update_screen()
+            self.width, self.height = event.width, event.height
 
     def generate_menu(self):
         menubar = Menu(self.root)

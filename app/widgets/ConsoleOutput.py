@@ -21,7 +21,7 @@ class ConsoleOutput(Text):
         self.event_bus = event_bus
 
         MessageByEvent(self.event_bus, self.write)
-        self.update_screen()
+
     def write(self, msg: str):
         now = datetime.now()
         self.insert(END, '[' + now.strftime("%H:%M:%S") + '] ', 'timestamp')
@@ -43,6 +43,7 @@ class ConsoleOutput(Text):
                 self.insert(END, msg)
                 break
         self.insert(END, "\n")
+        self.update_screen()
 
     def set_colors(self):
         with open(f'{self.script_dir}app{os.sep}widgets{os.sep}tag_colors.css', mode='r') as file:
@@ -59,4 +60,3 @@ class ConsoleOutput(Text):
     # noinspection PyTypeChecker
     def update_screen(self):
         self.see("end")
-        self.after('1000', self.update_screen)
