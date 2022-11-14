@@ -58,14 +58,14 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="1" column="4">
-          <widget class="QPushButton" name="btn_change_game">
+          <widget class="QPushButton" name="btn_exit">
            <property name="text">
             <string>Exit</string>
            </property>
           </widget>
          </item>
          <item row="1" column="2">
-          <widget class="QPushButton" name="btn_logofftimer_pc">
+          <widget class="QPushButton" name="btn_logoff_timer">
            <property name="text">
             <string>Logofftimer</string>
            </property>
@@ -163,7 +163,7 @@
                  </widget>
                 </item>
                 <item row="0" column="1">
-                 <widget class="QLabel" name="label_2">
+                 <widget class="QLabel" name="default_save_game">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -188,7 +188,7 @@
                  </widget>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QLabel" name="label">
+                 <widget class="QLabel" name="memory_save_game">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -227,7 +227,7 @@
              </property>
              <layout class="QGridLayout" name="gridLayout_7">
               <item row="0" column="0">
-               <widget class="QLabel" name="label_3">
+               <widget class="QLabel" name="backup_label">
                 <property name="text">
                  <string>TextLabel</string>
                 </property>
@@ -260,7 +260,7 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="0">
-          <widget class="QTextBrowser" name="textBrowser">
+          <widget class="QTextBrowser" name="msg_box">
            <property name="html">
             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -286,34 +286,33 @@ p, li { white-space: pre-wrap; }
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="menu_file">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionconfig"/>
-    <addaction name="actionOpen_Savegame_Folder"/>
-    <addaction name="actionexit"/>
+    <addaction name="action_config"/>
+    <addaction name="action_open_savegame_folder"/>
+    <addaction name="action_exit"/>
    </widget>
-   <widget class="QMenu" name="menuabout">
+   <widget class="QMenu" name="menu_about">
     <property name="title">
      <string>About</string>
     </property>
    </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuabout"/>
+   <addaction name="menu_file"/>
+   <addaction name="menu_about"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionexit">
+  <action name="action_exit">
    <property name="text">
     <string>Exit</string>
    </property>
   </action>
-  <action name="actionconfig">
+  <action name="action_config">
    <property name="text">
     <string>Config</string>
    </property>
   </action>
-  <action name="actionOpen_Savegame_Folder">
+  <action name="action_open_savegame_folder">
    <property name="text">
     <string>Open Savegame Folder</string>
    </property>
