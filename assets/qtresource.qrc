@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="images">
+    <file>logo/disk1-256.png</file>
+    <file>logo/disk1-256@0,5x.png</file>
+    <file>logo/disk1-256@0,25x.png</file>
+    <file>logo/disk1-256@0,75x.png</file>
+  </qresource>
+  <qresource prefix="arrow">
+    <file>arrow_right.png</file>
+  </qresource>
+</RCC>
