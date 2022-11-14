@@ -341,7 +341,7 @@ class MainWindow(tk.Tk):
         self.config.update_config('DSPGAME_START_GAME', self.CHECKBOX_DSPGAME_START_GAME_VAR.get())
 
     def CHECKBOX_LOGOFF_COMMAND(self):
-        global final_time_str
+        global final_time_str, COUNT
         if not self.config.LOGOFF:
             self.config.LOGOFF = True
             self.shutdowntime = datetime.datetime.now() + datetime.timedelta(minutes=int(int(self.config.COUNTER_TO_LOGOFF) * 10))

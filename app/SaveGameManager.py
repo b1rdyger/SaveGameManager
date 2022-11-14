@@ -2,9 +2,11 @@ import os
 import subprocess
 import threading
 import tkinter as tk
+from datetime import datetime
 from tkinter import Menu, ttk, DISABLED, NORMAL
 from tkinter import N, S, W, E
 from tkinter.ttk import Scrollbar
+from tkcalendar import Calendar
 
 from PIL import ImageTk, Image
 
@@ -18,7 +20,7 @@ class SaveGameWindow:
     frame_bg = '#ddd'
     game_running = False
     last_state = None
-
+    window = None
     def ram_drive_mounted(self):
         self._memory_save_game.configure(bg='lime')
 
@@ -39,6 +41,8 @@ class SaveGameWindow:
 
     def __init__(self, engine: Engine):
         # setup vars
+        self.logoff_bool = False
+        self.logoff_timer = None
         self.engine = engine
         self.config = self.engine.config
         self.event_bus = self.engine.event_bus
@@ -65,7 +69,7 @@ class SaveGameWindow:
         # self.root.protocol("WM_DELETE_WINDOW", self.root.iconify)
         # logo = ImageTk.PhotoImage(file=self.asset_dir + 'dsp_logo_rel32.png')
         self._generate_frame_game(None)
-
+        self._generate_buttons()
         frame_disks_game = tk.Frame(self.root, bg=self.frame_bg, height=100, padx=3, pady=2)
         frame_disks_game.grid(row=1, column=0, sticky=N+S+E+W, padx=2, pady=2)
         frame_disks_game.columnconfigure(0, weight=0)
@@ -93,6 +97,7 @@ class SaveGameWindow:
         self.text_log.pack(expand=True, fill='both')
         scroll = Scrollbar(_frame_log, command=self.text_log.yview)
         self.text_log.configure(yscrollcommand=scroll.set)
+        self.root.bind("<Configure>", self.resize)
 
         # btn_start = tk.Button(self.root, text='Start Game', bd=2, command=self.root.destroy, bg='red')
 
@@ -119,13 +124,21 @@ class SaveGameWindow:
         self.frame_game.rowconfigure(1, weight=0, minsize=40)
         self.frame_game.columnconfigure(0, weight=1)
         self.frame_game.columnconfigure(1, weight=0)
+
+
+    def _generate_buttons(self):
+        #Buttons
         self.btn_start_game = ttk.Button(self.frame_game, text='Start Game!', command=lambda: self.start_dsp())
-        self.btn_start_game.grid(row=0, column=1, sticky=N + S + E + W, ipadx=3, ipady=3)
-        btn_change_game = ttk.Button(self.frame_game, text='Exit!',
+        self.btn_logofftimer_pc = ttk.Button(self.frame_game, text='Logofftimer', command=self.logofftimer)
+        self.btn_change_game = ttk.Button(self.frame_game, text='Exit!',
                                      command=lambda: threading.Thread(target=self.on_closing, daemon=True).start())
-        btn_change_game.grid(row=0, column=2, sticky=N + S + E + W, ipadx=3, ipady=3)
-        self.root.bind("<Configure>", self.resize)
-        # label_profile = tk.Label(frame_game, text='Dyson Sphere Program', compound='left', image=logo,
+
+        #Grid them
+        self.btn_start_game.grid(row=0, column=1, sticky=N + S + E + W, ipadx=3, ipady=3)
+        self.btn_logofftimer_pc.grid(row=0, column=2, sticky=N + S + E + W, ipadx=3, ipady=3)
+        self.btn_change_game.grid(row=0, column=3, sticky=N + S + E + W, ipadx=3, ipady=3)
+
+# label_profile = tk.Label(frame_game, text='Dyson Sphere Program', compound='left', image=logo,
         #                          anchor=W, justify=LEFT)
         # label_profile.grid(row=0, column=0, sticky=W)
 
@@ -142,32 +155,77 @@ class SaveGameWindow:
             self.text_log.update_screen()
             self.width, self.height = event.width, event.height
 
+    def logofftimer(self):
+        self.text_log.write('Logofftimer was clicked')
+        self.create_logoff_window()
+
+    def create_logoff_window(self):
+        """
+        @TODO Implent logoff function
+        """
+        self.window = tk.Toplevel(self.root)
+        self.window.title('Logofftimer')
+        self.window.geometry('350x275')
+        self.window.resizable(False, False)
+        def set_logoff():
+            self.logoff_bool = True
+            self.text_log.write(f'Timer auf "{self.logoff_timer}" gesetzt')
+            self.window.forget(self.window)
+        def create_logoff_window_my_upd(*args):
+            dt=self.cal.get_date()    # collect the selected date as string
+            if (len(dt)>5):
+                dt = f"{dt}:{str(self.hr.get())},{str(self.mn.get())},00"
+                self.logoff_timer=datetime.strptime(dt,'%m/%d/%y:%H,%M,%S')
+                self.view_logofftime=self.logoff_timer.strftime("%d.%B %H:%M") # display format
+                self.l1.config(text=self.view_logofftime)#Not used yet
+
+        self.sel=tk.StringVar()
+        self.cal=Calendar(self.window,selectmode='day')
+        self.cal.grid(row=0, column=0, sticky=N + S + E + W, ipadx=3, ipady=3)
+        l_hr= tk.Label(self.window,text='Hour')
+        self.hr = tk.Scale(self.window, from_=0, to=23, orient='vertical',length=150,command=create_logoff_window_my_upd)
+        self.hr.grid(row=0, column=1, sticky=N + S + E + W, ipadx=3, ipady=3)
+        self.mn = tk.Scale(self.window, from_=0, to=59, orient='vertical',length=150,command=create_logoff_window_my_upd)
+        self.mn.grid(row=0 ,column=2, sticky=N + S + E + W, ipadx=3, ipady=3)
+        self.l1=tk.Label(self.window,font=('Times', 16,'normal'))# show date
+        self.l1.grid(row=1, column=0, sticky=N + S + E  + W, ipadx=3, ipady=3, columnspan=1)
+        l_hr.grid(row=1, column=1, sticky=N + S + E + W, ipadx=3, ipady=3)
+        l_mn=tk.Label(self.window,text='Mintue')
+        l_mn.grid(row=1, column=2, sticky=N + S + E + W, ipadx=3, ipady=3)
+
+        self.sel.trace('w', create_logoff_window_my_upd) # on change of string variable
+        create_logoff_window_my_upd() # Show the date and time while opening
+        self.btn_set_timer = ttk.Button(self.window, text='set Timer', command=set_logoff)
+        self.btn_set_timer.grid(row=2, column=0, sticky=N + S + E + W, ipadx=3, ipady=3, columnspan=4)
+
+
+
     def generate_menu(self):
-        menubar = Menu(self.root)
-        self.root.config(menu=menubar)
-        file_menu = Menu(
-            menubar,
-            tearoff=0
-        )
-        file_menu.add_command(label='New')
-        file_menu.add_command(label='Open...')
-        file_menu.add_command(label='Close')
-        file_menu.add_separator()
-        file_menu.add_command(
-            label='Exit',
-            command=self.root.destroy
-        )
-        menubar.add_cascade(
-            label="File",
-            menu=file_menu
-        )
-        help_menu = Menu(
-            menubar,
-            tearoff=0
-        )
-        help_menu.add_command(label='Welcome')
-        help_menu.add_command(label='About...')
-        menubar.add_cascade(
-            label="Help",
-            menu=help_menu
-        )
+            menubar = Menu(self.root)
+            self.root.config(menu=menubar)
+            file_menu = Menu(
+                menubar,
+                tearoff=0
+            )
+            file_menu.add_command(label='New')
+            file_menu.add_command(label='Open...')
+            file_menu.add_command(label='Close')
+            file_menu.add_separator()
+            file_menu.add_command(
+                label='Exit',
+                command=self.root.destroy
+            )
+            menubar.add_cascade(
+                label="File",
+                menu=file_menu
+            )
+            help_menu = Menu(
+                menubar,
+                tearoff=0
+            )
+            help_menu.add_command(label='Welcome')
+            help_menu.add_command(label='About...')
+            menubar.add_cascade(
+                label="Help",
+                menu=help_menu
+            )
