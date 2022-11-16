@@ -2,6 +2,8 @@ import json
 import os
 import threading
 
+from PyQt6.QtCore import QRunnable
+
 from app.EventBus import EventBus
 from app.FileCopyHero import FileCopyHero, SaveToBlock
 from app.MemoryFileSystemFacade import MemoryFileSystemFacade
@@ -11,7 +13,7 @@ from app.global_logging import *
 from app.widgets.ConsoleOutput import ConsoleOutput
 
 
-class Engine:
+class Engine(QRunnable):
     root_dir = None
     config = None
     hidden_tag_file = '.tag-ram'
@@ -84,8 +86,9 @@ class Engine:
         for one_backup_folder in self.config['backup_save_dirs']:
             one_backup_folder['location'] = self.get_real_path(one_backup_folder['location'])
 
+    # noinspection PyMethodMayBeStatic
     def get_real_path(self, path):
-        if '%USERPROFILE%' in path:
+        if os.name == 'nt' and '%USERPROFILE%' in path:
             new_path = os.path.expanduser(os.environ['USERPROFILE'])
             logger.info(f'{path.replace("%USERPROFILE%", new_path)}')
             return path.replace("%USERPROFILE%", new_path)

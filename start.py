@@ -2,8 +2,10 @@ import logging
 import os
 import sys
 
-from app.Engine import Engine
+from PyQt6.QtWidgets import QApplication
 
+from app.Engine import Engine
+from app.SaveGameManagerQt import SaveGameManagerQt
 
 if __name__ == '__main__':
     script_dir = os.path.dirname(os.path.realpath(__file__)) + os.sep
@@ -13,5 +15,7 @@ if __name__ == '__main__':
 
     logging.debug(f"Python version {str(sys.version)}")
 
-    engine = Engine(script_dir)
+    app = QApplication(sys.argv)
+    engine = SaveGameManagerQt(script_dir)
+    sys.exit(app.exec())
 

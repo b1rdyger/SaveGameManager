@@ -1,7 +1,6 @@
 import subprocess
 
 from app import EventBus
-from app.MemoryFileSystem import MemoryFileSystem
 
 
 class Dummy:
@@ -16,6 +15,7 @@ class MemoryFileSystemFacade:
         self.event_bus = event_bus
         self.hidden_tag_file = hidden_tag_file
 
+    # noinspection PyBroadException
     def check_installed(self) -> bool:
         try:
             subprocess.Popen(['imdisk'], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
@@ -25,6 +25,7 @@ class MemoryFileSystemFacade:
 
     def get_concrete(self):
         if self.check_installed():
+            from app.MemoryFileSystem import MemoryFileSystem
             return MemoryFileSystem(self.save_path, self.event_bus, self.hidden_tag_file)
         else:
             return Dummy()
