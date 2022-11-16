@@ -3,6 +3,7 @@ import subprocess
 import sys
 
 from PyQt6 import uic, QtWidgets, QtCore, QtGui
+from PyQt6.QtCore import QThreadPool
 from PyQt6.QtGui import QPixmap
 
 
@@ -21,6 +22,8 @@ class SaveGameManagerQt(QtWidgets.QMainWindow):
         self.arrow.setPixmap(icon)
         self.show()  # Show the GUI
         self._generate_buttons()
+
+        self.threadpool.start(self.engine)
 
     def _generate_buttons(self):
         # Buttons

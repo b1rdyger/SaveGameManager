@@ -2,7 +2,7 @@ import json
 import os
 import threading
 
-from PyQt6.QtCore import QRunnable
+from PyQt6.QtCore import QRunnable, pyqtSlot
 
 from app.EventBus import EventBus
 from app.FileCopyHero import FileCopyHero, SaveToBlock
@@ -18,7 +18,9 @@ class Engine(QRunnable):
     config = None
     hidden_tag_file = '.tag-ram'
 
-    def __init__(self, root_dir):
+    def __init__(self, root_dir, *args, **kwargs):
+        super(Engine, self).__init__()
+
         self.root_dir = root_dir
         self._config_file = f'{root_dir}config{os.sep}games.json'
         self._console_output = None
@@ -53,7 +55,8 @@ class Engine(QRunnable):
         SaveGameWindow(self)
 
     # engine thread
-    def main_runner(self):
+    @pyqtSlot()
+    def run(self):
         ram_drive_letter = self.mfs.create_or_just_get()
 
         if ram_drive_letter is not None and self.fch.backup_for_symlink():
