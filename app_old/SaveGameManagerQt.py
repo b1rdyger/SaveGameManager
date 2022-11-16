@@ -1,31 +1,26 @@
 import os
 import subprocess
 import sys
+from threading import Thread
 
 from PyQt6 import uic, QtWidgets, QtCore, QtGui
-from PyQt6.QtCore import QThreadPool, QThread
-
+from PyQt6.QtCore import QThreadPool
+from PyQt6.QtGui import QPixmap
 from app.Engine import Engine
-from app.SGMSignals.SGMSignals import SGMSignals
-from app.SaveGameManagerUi import SaveGameManagerUi
 
-
-class SaveGameManagerQt(SaveGameManagerUi):
+class SaveGameManagerQt(QtWidgets.QMainWindow):
+    arrow: QtWidgets.QLabel
 
     def __init__(self, root_dir: str):
         super().__init__()
         self.root_dir = root_dir
-        self.signals = SGMSignals()
+
         self.threadpool = QThreadPool()
+        self.engine = Engine(self.root_dir)
 
-        # init Engine Thread
-        self.engine = Engine()
-        self.engine.init(self.root_dir, self.threadpool)
-        self.engine_thread = QThread()
-        self.engine.moveToThread(self.engine_thread)
-        self.engine_thread.start()
-
-        self.config = None  # @todo
+        self.config = None
+        self.btn_exit = None
+        self.btn_start_game = None
         QtCore.QDir.addSearchPath('icons', self.root_dir + os.sep + 'assets')
         icon = QtGui.QPixmap('icons:arrow_right.png')
         uic.loadUi(self.root_dir + os.sep + 'assets' + os.sep + 'main-window.ui', self)  # Load the .ui file
@@ -33,12 +28,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.show()  # Show the GUI
         self._generate_buttons()
 
-    def bind_engine_emits(self):
-        self.signals.run_engine.connect(self.engine.run)
-        self.signals.stop_engine.connect(self.engine.stop)
-
-    def start_engine(self):
-        self.signals.run_engine.emit()
+        self.threadpool.start(self.engine)
 
     def _generate_buttons(self):
         # Buttons
@@ -50,9 +40,8 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.msg_box.append('this is a Message,')
 
     def start_dsp(self):
-        subprocess.Popen(rf"{self.config.get('steam_path')} -applaunch 1366540")
+       subprocess.Popen(rf"{self.config.get('steam_path')} -applaunch 1366540")
 
     def exit(self):
-        self.signals.stop_engine.emit()
         self.destroy()
         sys.exit()

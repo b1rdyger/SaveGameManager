@@ -18,4 +18,3 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     engine = SaveGameManagerQt(script_dir)
     sys.exit(app.exec())
-
