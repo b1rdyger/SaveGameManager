@@ -11,5 +11,5 @@ class MFSSignals(SGMSignalObjects):
     savePathDoesNotExists = pyqtSignal()
     symlinkCreated = pyqtSignal()
     symlinkRemoved = pyqtSignal()
-
     cleanedUp = pyqtSignal()
+    writeToLog = pyqtSignal(str)

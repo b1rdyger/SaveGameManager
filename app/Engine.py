@@ -1,12 +1,11 @@
 import json
 import os
 
-from PyQt6.QtCore import pyqtSlot, QObject, QRunnable
+from PyQt6.QtCore import pyqtSlot, QObject
 
 from app.FileCopyHero import FileCopyHero, SaveToBlock
 from app.MemoryFileSystemFacade import MemoryFileSystemFacade
 from app.ProcessChecker import ProcessChecker
-from app.SGMSignals.MFSSignals import MFSSignals
 
 
 # from app.EventBus import EventBus
@@ -67,6 +66,9 @@ class Engine(QObject):
         self.fch.stop()
         self.mfs.stop()
 
+    # def set_write_callback(self, co: msg_box):
+    #     self.fch.set_console_write_callback(co.write)
+    #     co.write("Welcome to the [highlighted:SaveGameManager]")
 
     # offer gui console to other modules
     # def set_write_callback(self, co: ConsoleOutput):
@@ -82,6 +84,7 @@ class Engine(QObject):
             self.config['common_save_dir'] = self.get_real_path(self.config['common_save_dir'])
         for one_backup_folder in self.config['backup_save_dirs']:
             one_backup_folder['location'] = self.get_real_path(one_backup_folder['location'])
+
 
     # noinspection PyMethodMayBeStatic
     def get_real_path(self, path):

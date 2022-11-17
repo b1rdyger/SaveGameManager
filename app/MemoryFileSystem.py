@@ -3,7 +3,6 @@ import string
 from ctypes import windll
 
 import numpy as np
-from PyQt6.QtCore import QRunnable
 from fs.osfs import OSFS
 
 from app.SGMSignals.MFSSignals import MFSSignals
@@ -95,6 +94,7 @@ class MemoryFileSystem:
             os.rmdir(self.save_path)
             os.mkdir(self.save_path)
             self.signals.symlinkRemoved.emit()
+            self.signals.writeToLog.emit('Restore erfolgreich')
             return True
         return False
 

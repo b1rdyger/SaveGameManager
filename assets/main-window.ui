@@ -30,7 +30,7 @@
    <locale language="English" country="UnitedStates"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QGridLayout" name="gridLayout_3">
     <item row="0" column="0">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -48,7 +48,7 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(255, 0, 0);</string>
+         <string notr="true">background-color: rgb(255, 255, 255);</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
@@ -56,39 +56,78 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="1" column="4">
-          <widget class="QPushButton" name="btn_exit">
-           <property name="text">
-            <string>Exit</string>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="QFrame" name="frame">
+           <property name="frameShape">
+            <enum>QFrame::Box</enum>
            </property>
+           <property name="frameShadow">
+            <enum>QFrame::Plain</enum>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_9">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+              <property name="textFormat">
+               <enum>Qt::RichText</enum>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+              <property name="margin">
+               <number>5</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
-         <item row="1" column="2">
-          <widget class="QPushButton" name="btn_logoff_timer">
-           <property name="text">
-            <string>Logofftimer</string>
+         <item row="0" column="1">
+          <widget class="QFrame" name="frame_2">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
            </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+           <property name="autoFillBackground">
+            <bool>false</bool>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
+           <property name="frameShape">
+            <enum>QFrame::Box</enum>
            </property>
-          </spacer>
-         </item>
-         <item row="0" column="4">
-          <widget class="QPushButton" name="btn_start_game">
-           <property name="text">
-            <string>Start DSP</string>
+           <property name="frameShadow">
+            <enum>QFrame::Plain</enum>
            </property>
+           <property name="lineWidth">
+            <number>1</number>
+           </property>
+           <property name="midLineWidth">
+            <number>0</number>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_8">
+            <item row="0" column="1">
+             <widget class="QPushButton" name="btn_start_game">
+              <property name="text">
+               <string>Start DSP</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QPushButton" name="btn_logoff_timer">
+              <property name="text">
+               <string>Logofftimer</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="btn_exit">
+              <property name="text">
+               <string>Exit</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -109,7 +148,7 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(0, 255, 0);</string>
+         <string notr="true">background-color: rgb(255, 255, 255);</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
@@ -123,7 +162,7 @@
            <item>
             <widget class="QFrame" name="frame_disk_ramdrive">
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(0, 0, 255);</string>
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
              </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
@@ -197,8 +236,23 @@
                     <height>32</height>
                    </size>
                   </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Box</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Plain</enum>
+                  </property>
                   <property name="text">
                    <string>default-safe-path</string>
+                  </property>
+                  <property name="textFormat">
+                   <enum>Qt::RichText</enum>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                  </property>
+                  <property name="margin">
+                   <number>5</number>
                   </property>
                  </widget>
                 </item>
@@ -222,8 +276,23 @@
                     <height>32</height>
                    </size>
                   </property>
+                  <property name="layoutDirection">
+                   <enum>Qt::LeftToRight</enum>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Box</enum>
+                  </property>
                   <property name="text">
                    <string>Ramdisk Ready</string>
+                  </property>
+                  <property name="textFormat">
+                   <enum>Qt::RichText</enum>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                  </property>
+                  <property name="margin">
+                   <number>5</number>
                   </property>
                  </widget>
                 </item>
@@ -243,8 +312,17 @@
              <layout class="QGridLayout" name="gridLayout_7">
               <item row="0" column="0">
                <widget class="QLabel" name="backup_label">
+                <property name="frameShape">
+                 <enum>QFrame::Box</enum>
+                </property>
                 <property name="text">
                  <string>TextLabel</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="margin">
+                 <number>5</number>
                 </property>
                </widget>
               </item>
@@ -275,10 +353,16 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="0">
-          <widget class="QTextBrowser" name="msg_box">
+          <widget class="SGMTextBrowser" name="msg_box">
            <property name="styleSheet">
             <string notr="true">color: rgb(255, 255, 255);
 background-color: rgb(0, 0, 0);</string>
+           </property>
+           <property name="verticalScrollBarPolicy">
+            <enum>Qt::ScrollBarAlwaysOff</enum>
+           </property>
+           <property name="horizontalScrollBarPolicy">
+            <enum>Qt::ScrollBarAlwaysOff</enum>
            </property>
            <property name="html">
             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -337,6 +421,13 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SGMTextBrowser</class>
+   <extends>QTextEdit</extends>
+   <header>MyCustomClass</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="qtresource.qrc"/>
   <include location="qtresource.qrc"/>
