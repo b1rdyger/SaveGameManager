@@ -33,6 +33,10 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.show()  # Show the GUI
         self._generate_buttons()
 
+        self.mfs_signals = MFSSignals()
+        self.bind_engine_emits()
+        self.start_engine()
+
     def bind_engine_emits(self):
         self.signals.run_engine.connect(self.engine.run)
         self.signals.stop_engine.connect(self.engine.stop)

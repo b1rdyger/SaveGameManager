@@ -1,7 +1,7 @@
 import json
 import os
 
-from PyQt6.QtCore import pyqtSlot, QObject
+from PyQt6.QtCore import pyqtSlot, QObject, QRunnable
 
 from app.FileCopyHero import FileCopyHero, SaveToBlock
 from app.MemoryFileSystemFacade import MemoryFileSystemFacade
@@ -18,7 +18,7 @@ from app.SGMSignals.MFSSignals import MFSSignals
 # from app.widgets.ConsoleOutput import ConsoleOutput
 
 
-class Engine(QRunnable):
+class Engine(QObject):
     root_dir = None
     config = None
     hidden_tag_file = '.tag-ram'
