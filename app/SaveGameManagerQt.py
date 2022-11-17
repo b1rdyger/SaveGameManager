@@ -1,11 +1,13 @@
 import os
 import subprocess
 import sys
+import time
 
 from PyQt6 import uic, QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import QThreadPool, QThread
 
 from app.Engine import Engine
+from app.SGMSignals.MFSSignals import MFSSignals
 from app.SGMSignals.SGMSignals import SGMSignals
 from app.SaveGameManagerUi import SaveGameManagerUi
 
@@ -16,11 +18,9 @@ class SaveGameManagerQt(SaveGameManagerUi):
         super().__init__()
         self.root_dir = root_dir
         self.signals = SGMSignals()
-        self.threadpool = QThreadPool()
 
         # init Engine Thread
-        self.engine = Engine()
-        self.engine.init(self.root_dir, self.threadpool)
+        self.engine = Engine(self.root_dir)
         self.engine_thread = QThread()
         self.engine.moveToThread(self.engine_thread)
         self.engine_thread.start()
@@ -36,6 +36,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
     def bind_engine_emits(self):
         self.signals.run_engine.connect(self.engine.run)
         self.signals.stop_engine.connect(self.engine.stop)
+        self.mfs_signals.cleanedUp.connect(self.close)
 
     def start_engine(self):
         self.signals.run_engine.emit()
@@ -54,5 +55,3 @@ class SaveGameManagerQt(SaveGameManagerUi):
 
     def exit(self):
         self.signals.stop_engine.emit()
-        self.destroy()
-        sys.exit()

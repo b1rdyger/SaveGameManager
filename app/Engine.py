@@ -1,10 +1,12 @@
 import json
 import os
-import threading
 
-from PyQt6.QtCore import QRunnable, pyqtSlot, QObject, pyqtSignal, QThreadPool
+from PyQt6.QtCore import pyqtSlot, QObject
 
+from app.FileCopyHero import FileCopyHero, SaveToBlock
 from app.MemoryFileSystemFacade import MemoryFileSystemFacade
+from app.ProcessChecker import ProcessChecker
+from app.SGMSignals.MFSSignals import MFSSignals
 
 
 # from app.EventBus import EventBus
@@ -21,20 +23,19 @@ class Engine(QRunnable):
     config = None
     hidden_tag_file = '.tag-ram'
 
-    def init(self, root_dir, threadpool: QThreadPool, *args, **kwargs):
-        # super(Engine, self).__init__()
+    def __init__(self, root_dir):
+        super().__init__()
 
         self.root_dir = root_dir
-        self.threadpool = threadpool
 
         self.config_file = f'{root_dir}config{os.sep}games.json'
         self.load_config()
 
         # self._console_output = None
 
-        # self.fch = FileCopyHero(self.event_bus, self.hidden_tag_file, self.config.get('ignored_files'))
+        self.fch = FileCopyHero(self.hidden_tag_file, self.config.get('ignored_files'))
 
-        # self.fch.set_from_path(self.config.get('common_save_dir'))
+        self.fch.set_from_path(self.config.get('common_save_dir'))
 
         if not os.path.exists(os.path.join(self.config.get('common_save_dir'))):
             if os.path.islink(os.path.join(self.config.get('common_save_dir'))):
@@ -43,33 +44,29 @@ class Engine(QRunnable):
 
         backup_folders = self.config.get('backup_save_dirs')
 
-        # for one_backup_folder in backup_folders:
-        #     self.fch.add_save_block(SaveToBlock(one_backup_folder['location']))
+        for one_backup_folder in backup_folders:
+            self.fch.add_save_block(SaveToBlock(one_backup_folder['location']))
 
         # mfs = MemoryFileSystem(self.config.get('common_save_dir'), self.config.get('backup_save_dir')) # @todo
         self.mfs = MemoryFileSystemFacade(self.config.get('common_save_dir'),
                                           self.hidden_tag_file).get_concrete()
 
-        # self.pc = ProcessChecker(self.event_bus, self.config.get('process_name'))
-
-        # self.event_bus.add_listener(SGMStop, self.stop)
+        self.pc = ProcessChecker(self.config.get('process_name'))
 
     # engine thread
     @pyqtSlot()
     def run(self):
         ram_drive_letter = self.mfs.create_or_just_get()
-        os.rmdir(self.config['common_save_dir'])
-        if ram_drive_letter is not None:  #and self.fcn.backup_for_symlink():
+        if ram_drive_letter is not None and self.fch.backup_for_symlink():
             self.mfs.create_symlink()
-            # self.fch.restore_last_save_from_backup()
-
-        # self._mfs_thread = threading.Thread(target=self.mfs.run).start()
-        # fch thread start @todo
+            self.fch.restore_last_save_from_backup()
+        self.fch.start()
 
     @pyqtSlot()
     def stop(self):
-        # alle threads stoppen  @todo
+        self.fch.stop()
         self.mfs.stop()
+
 
     # offer gui console to other modules
     # def set_write_callback(self, co: ConsoleOutput):

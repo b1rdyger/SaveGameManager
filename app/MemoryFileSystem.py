@@ -101,3 +101,4 @@ class MemoryFileSystem:
     def stop(self):
         self.__destroy_ram_drive()
         self.restore_save_empty()
+        self.signals.cleanedUp.emit()

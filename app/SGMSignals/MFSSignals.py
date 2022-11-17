@@ -1,7 +1,9 @@
-from PyQt6.QtCore import QObject, pyqtSignal
+from PyQt6.QtCore import pyqtSignal
+
+from app.SGMSignals._SGMSignalObjects import SGMSignalObjects
 
 
-class MFSSignals(QObject):
+class MFSSignals(SGMSignalObjects):
 
     driveCreated = pyqtSignal()
     driveDestroyed = pyqtSignal()
@@ -10,3 +12,4 @@ class MFSSignals(QObject):
     symlinkCreated = pyqtSignal()
     symlinkRemoved = pyqtSignal()
 
+    cleanedUp = pyqtSignal()
