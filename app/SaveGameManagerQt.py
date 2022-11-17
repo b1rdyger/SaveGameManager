@@ -1,10 +1,8 @@
 import os
 import subprocess
-import sys
-import time
 
-from PyQt6 import uic, QtWidgets, QtCore, QtGui
-from PyQt6.QtCore import QThreadPool, QThread
+from PyQt6 import uic, QtCore, QtGui
+from PyQt6.QtCore import QThread
 
 from app.Engine import Engine
 from app.SGMSignals.MFSSignals import MFSSignals
