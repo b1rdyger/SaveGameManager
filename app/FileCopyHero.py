@@ -72,11 +72,11 @@ class FileCopyHero:
             self.backup_files(files_in_save)
 
     # save everything everywhere according to the configuration
-    def smart_backup(self, tryy=5) -> bool:
-        if tryy == 0:
+    def smart_backup(self, tryy=0) -> bool:
+        if tryy == 5:
             self.console_log('[error:Smart backup fehlgeschlagen! Bitte manuelles Backup vornehmen!]')
             return True
-        if tryy == 5:
+        if tryy == 0:
             self.console_log('[highlighted:Starte Smart backup]')
         files_in_save = os.listdir(self.save_from)
         if files_in_save not in [None, '']:
@@ -84,9 +84,10 @@ class FileCopyHero:
             try:
                 self.backup_files(files_in_save)
                 self.console_log('[success:Smart backup erfolgreich!]')
+                self.signals.backup_successful.emit()
             except Exception:
-                time.sleep(0.2)
-                self.smart_backup(tryy-1)
+                time.sleep(0.2 + (2**tryy)/10)
+                self.smart_backup(tryy+1)
 
     # noinspection PyTypeChecker
     def restore_last_save_from_backup(self) -> bool:

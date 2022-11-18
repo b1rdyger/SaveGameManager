@@ -27,8 +27,8 @@ class LogoffTimerQt(QWidget):
         self.ui.btn_cancel_timer.clicked.connect(self.logoff_cancel_timer)
         self.ui.btn_quit_timer.clicked.connect(self.logoff_quit_timer)
         self.ui.logoff_dial.valueChanged.connect(self.dial_value_changed)
-        self.ui.logoff_dial.setValue(0)
         self.parent.logoff_label.setStyleSheet(self.logoff_inactive)
+        self.dial_value_changed(0)
 
     def get_minutes(self, value=None):
         if value is None:
@@ -37,9 +37,10 @@ class LogoffTimerQt(QWidget):
 
     def dial_value_changed(self, value):
         minutes_in_future = self.get_minutes(value)
+        real_minutes_in_future = max(1, self.get_minutes(value))
         self.ui.logoff_ic.display(minutes_in_future)
         self.want_shutdown_after = datetime.datetime.now()
-        self.want_shutdown_after = self.want_shutdown_after + datetime.timedelta(seconds=minutes_in_future * 60)
+        self.want_shutdown_after = self.want_shutdown_after + datetime.timedelta(seconds=real_minutes_in_future * 60)
 
     def show(self):
         self.ui.show()
@@ -48,18 +49,16 @@ class LogoffTimerQt(QWidget):
         self.ui.hide()
 
     def logoff_set_timer(self):
-        if self.ui.logoff_dial.value() >= 1:
-            self.shutdown_after = self.want_shutdown_after
-            finished_date = datetime.datetime.strftime(self.shutdown_after, "%d.%m. %H:%M")
-            self.ui.logoff_time_status.setText(f'Time was set to {finished_date}')
-            self.parent.logoff_label.setText(f'Logoff: {finished_date}')
-            self.parent.logoff_label.setStyleSheet(self.logoff_active)
+        self.shutdown_after = self.want_shutdown_after
+        finished_date = datetime.datetime.strftime(self.shutdown_after, "%d.%m. %H:%M")
+        self.ui.logoff_time_status.setText(f'Time was set to {finished_date}')
+        self.parent.logoff_label.setText(f'Logoff: {finished_date}')
+        self.parent.logoff_label.setStyleSheet(self.logoff_active)
 
     def logoff_cancel_timer(self):
         self.shutdown_after = None
-        while self.ui.logoff_dial.value() > 0:
-            self.ui.logoff_dial.setValue(self.ui.logoff_dial.value() - 1)
-            self.ui.update()
+        self.dial_value_changed(0)
+        self.ui.logoff_dial.setValue(0)
         self.ui.logoff_time_status.setText('Reset Timer')
         self.parent.logoff_label.setText('Logoff: Off')
         self.parent.logoff_label.setStyleSheet(self.logoff_inactive)

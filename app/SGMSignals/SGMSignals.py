@@ -8,4 +8,3 @@ class SGMSignals(SGMSignalObjects):
 
     run_engine: PyQt6.QtCore.pyqtSignal = PyQt6.QtCore.pyqtSignal()
     stop_engine: PyQt6.QtCore.pyqtSignal = PyQt6.QtCore.pyqtSignal()
-

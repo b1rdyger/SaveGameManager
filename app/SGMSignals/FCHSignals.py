@@ -10,3 +10,4 @@ class FCHSignals(SGMSignalObjects):
     cannot_use = pyqtSignal(str)
     start_observer = pyqtSignal(str)
     stop_observer = pyqtSignal()
+    backup_successful = pyqtSignal()

@@ -11,6 +11,7 @@ from PyQt6.QtWidgets import QTextEdit
 
 from app.Engine import Engine
 from app.LogoffTimerQt import LogoffTimerQt
+from app.SGMSignals.EngineSignals import EngineSignals
 from app.SGMSignals.MFSSignals import MFSSignals
 from app.SGMSignals.PCSignals import PCSignals
 from app.SGMSignals.SGMSignals import SGMSignals
@@ -102,7 +103,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.setWindowIcon(logo)
 
         self.msg_box.prepare(self.root_dir)
-        self.new_window = LogoffTimerQt(self.root_dir,self)
+        self.logoff_timer_window = LogoffTimerQt(self.root_dir, self)
 
         # self.text_log = self.msg_box()
         self.game_info.setText('')
@@ -114,8 +115,9 @@ class SaveGameManagerQt(SaveGameManagerUi):
 
         self.mfs_signals = MFSSignals()
         self.pc_signals = PCSignals()
-        self.bind_engine_emits()
-        self.bind_mfs_emits()
+        self.engine_signals = EngineSignals()
+        self.bind_sgm_emits()
+        self.bind_rest_emits()
 
         self.mbe = MessageByEvent(self.msg_box)
         self.mbe.prepare()
@@ -128,19 +130,19 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.btn_exit.clicked.connect(self.exit)
         self.btn_logoff_timer.clicked.connect(self.open_logoff_timer_window)
 
-    def bind_engine_emits(self):
+    def bind_sgm_emits(self):
         self.signals.run_engine.connect(self.engine.run)
         self.signals.stop_engine.connect(self.engine.stop)
 
-    def bind_mfs_emits(self):
-        self.mfs_signals.cleanedUp.connect(self.close)
+    def bind_rest_emits(self):
         self.mfs_signals.driveCreated.connect(self.ram_disk_mounted)
         self.mfs_signals.symlinkCreated.connect(lambda: self.arrow_to_ramdrive(True))
         self.mfs_signals.symlinkRemoved.connect(lambda: self.arrow_to_ramdrive(False))
         self.pc_signals.running.connect(self.change_game_info_panel)
+        self.mfs_signals.cleanedUp.connect(self.is_cleaned_up)
 
     def open_logoff_timer_window(self):
-        self.new_window.show()
+        self.logoff_timer_window.show()
 
     @pyqtSlot()
     def arrow_to_ramdrive(self, at_ramdrive):
@@ -175,5 +177,12 @@ class SaveGameManagerQt(SaveGameManagerUi):
     def start_dsp(self):
         subprocess.Popen(rf"{self.config.get('steam_path')} -applaunch 1366540")
 
-    def exit(self):
+    @staticmethod
+    def is_cleaned_up():
+        sys.exit()
+
+    def closeEvent(self, event):
+        event.ignore()
+        self.hide()
+        self.logoff_timer_window.close()
         self.signals.stop_engine.emit()
