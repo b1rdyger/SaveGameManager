@@ -43,6 +43,7 @@ class MemoryFileSystem:
         for letter in drives:
             if os.path.isfile(letter + ':\\' + self.hidden_tag_file):
                 self.ram_drive = letter
+                self.signals.driveCreated.emit(self.ram_drive)
                 return self.ram_drive
         if all_good_drives := [i for i in self.possible_drives if i not in drives]:
             first_good_drive = all_good_drives[0]

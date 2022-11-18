@@ -1,11 +1,13 @@
-from PyQt6.QtWidgets import QMainWindow, QLabel
+from PyQt6.QtWidgets import QMainWindow, QLabel, QPushButton
 
 
 class SaveGameManagerUi(QMainWindow):
-    arrow: QLabel
-    btn_logoff_timer = None
-    btn_exit = None
-    btn_start_game = None
+    game_info: QLabel
+    arrow_up: QLabel
+    arrow_down: QLabel
+    btn_logoff_timer: QPushButton
+    btn_exit: QPushButton
+    btn_start_game: QPushButton
     msg_box = None
     game_info: QLabel
     memory_save_game: QLabel

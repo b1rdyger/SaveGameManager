@@ -7,10 +7,11 @@ from datetime import datetime
 from PyQt6 import uic, QtCore, QtGui
 from PyQt6.QtCore import QThread, pyqtSlot
 from PyQt6.QtGui import QTextCharFormat, QBrush, QColor
-from PyQt6.QtWidgets import QTextEdit, QStyle
+from PyQt6.QtWidgets import QTextEdit
 
 from app.Engine import Engine
 from app.SGMSignals.MFSSignals import MFSSignals
+from app.SGMSignals.PCSignals import PCSignals
 from app.SGMSignals.SGMSignals import SGMSignals
 from app.SaveGameManagerUi import SaveGameManagerUi
 from app.widgets.MessageByEvent import MessageByEvent
@@ -77,7 +78,7 @@ class MyCustomClass(object):
 
 
 class SaveGameManagerQt(SaveGameManagerUi):
-
+    last_running_state = None
     def __init__(self, root_dir: str):
         super().__init__()
         self.root_dir = root_dir
@@ -99,11 +100,15 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.msg_box.prepare(self.root_dir)
 
         # self.text_log = self.msg_box()
-        self.arrow.setPixmap(icon)
+        self.game_info.setText('')
+        self.arrow_up.setPixmap(icon)
+        self.arrow_down.setPixmap(icon)
+        self.arrow_down.hide()
         self.show()  # Show the GUI
         self._generate_buttons()
 
         self.mfs_signals = MFSSignals()
+        self.pc_signals = PCSignals()
         self.bind_engine_emits()
         self.bind_mfs_emits()
 
@@ -111,6 +116,12 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.mbe.prepare()
 
         self.start_engine()
+
+    def _generate_buttons(self):
+        # Buttons
+        self.btn_start_game.clicked.connect(self.start_dsp)
+        self.btn_exit.clicked.connect(self.exit)
+        self.btn_logoff_timer.clicked.connect(self.open_logoff_timer_window)
 
     def bind_engine_emits(self):
         self.signals.run_engine.connect(self.engine.run)
@@ -121,10 +132,33 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.mfs_signals.driveCreated.connect(self.ram_disk_mounted)
         self.mfs_signals.symlinkCreated.connect(lambda: self.arrow_to_ramdrive(True))
         self.mfs_signals.symlinkRemoved.connect(lambda: self.arrow_to_ramdrive(False))
+        self.pc_signals.running.connect(self.change_game_info_panel)
+
+    def open_logoff_timer_window(self):
+        pass
 
     @pyqtSlot()
     def arrow_to_ramdrive(self, at_ramdrive):
-        pass
+        if at_ramdrive:
+            self.arrow_up.hide()
+            self.arrow_down.show()
+        else:
+            self.arrow_down.hide()
+            self.arrow_up.show()
+
+    @pyqtSlot(bool)
+    def change_game_info_panel(self, is_running):
+        if self.last_running_state == is_running:
+            return True
+        self.last_running_state = is_running
+        if is_running:
+            self.game_info.setText('Game Running!')
+            self.game_info.setStyleSheet("QLabel { background-color : lime; color : black; }")
+            self.btn_start_game.setDisabled(True)
+        else:
+            self.game_info.setText('Game Stopped!')
+            self.game_info.setStyleSheet("QLabel { background-color : red; color : black; }")
+            self.btn_start_game.setDisabled(False)
 
     @pyqtSlot()
     def ram_disk_mounted(self):
@@ -132,15 +166,6 @@ class SaveGameManagerQt(SaveGameManagerUi):
 
     def start_engine(self):
         self.signals.run_engine.emit()
-
-    def _generate_buttons(self):
-        # Buttons
-        self.btn_start_game.clicked.connect(self.start_dsp)
-        self.btn_exit.clicked.connect(self.exit)
-        self.btn_logoff_timer.clicked.connect(self.open_logoff_timer_window)
-
-    def open_logoff_timer_window(self):
-        self.msg_box.write('foo [info:this is blue] in the message')
 
     def start_dsp(self):
         subprocess.Popen(rf"{self.config.get('steam_path')} -applaunch 1366540")
