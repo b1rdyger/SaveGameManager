@@ -5,11 +5,10 @@ from app.SGMSignals._SGMSignalObjects import SGMSignalObjects
 
 class MFSSignals(SGMSignalObjects):
 
-    driveCreated = pyqtSignal()
+    driveCreated = pyqtSignal(str)
     driveDestroyed = pyqtSignal()
     savePathNotEmpty = pyqtSignal()
     savePathDoesNotExists = pyqtSignal()
     symlinkCreated = pyqtSignal()
     symlinkRemoved = pyqtSignal()
     cleanedUp = pyqtSignal()
-    writeToLog = pyqtSignal(str)

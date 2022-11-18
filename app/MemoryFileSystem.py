@@ -59,7 +59,7 @@ class MemoryFileSystem:
             OSFS(f'{letter}:\\').create(self.hidden_tag_file)
             os.system(f'attrib +H {letter}' + ':\\' + self.hidden_tag_file)
             self.ram_drive = letter
-            # self._event_bus.emit(MFSDriveCreated)
+            self.signals.driveCreated.emit(self.ram_drive)
             return True
         return False
 
@@ -94,7 +94,6 @@ class MemoryFileSystem:
             os.rmdir(self.save_path)
             os.mkdir(self.save_path)
             self.signals.symlinkRemoved.emit()
-            self.signals.writeToLog.emit('Restore erfolgreich')
             return True
         return False
 

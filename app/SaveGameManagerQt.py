@@ -13,6 +13,7 @@ from app.Engine import Engine
 from app.SGMSignals.MFSSignals import MFSSignals
 from app.SGMSignals.SGMSignals import SGMSignals
 from app.SaveGameManagerUi import SaveGameManagerUi
+from app.widgets.MessageByEvent import MessageByEvent
 
 
 class MyCustomClass(object):
@@ -105,6 +106,10 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.mfs_signals = MFSSignals()
         self.bind_engine_emits()
         self.bind_mfs_emits()
+
+        self.mbe = MessageByEvent(self.msg_box)
+        self.mbe.prepare()
+
         self.start_engine()
 
     def bind_engine_emits(self):
@@ -117,7 +122,6 @@ class SaveGameManagerQt(SaveGameManagerUi):
 
     def start_engine(self):
         self.signals.run_engine.emit()
-
 
     def _generate_buttons(self):
         # Buttons
