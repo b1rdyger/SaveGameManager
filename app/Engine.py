@@ -9,6 +9,7 @@ from app.ProcessChecker import ProcessChecker
 from app.SGMSignals.EngineSignals import EngineSignals
 from app.SGMSignals.FCHSignals import FCHSignals
 
+
 class Engine(QObject):
     root_dir = None
     config = None
@@ -45,6 +46,9 @@ class Engine(QObject):
         self.pc = ProcessChecker(self.config.get('process_name'))
 
         self.fch_signals.backup_successful.connect(self.backup_saved)
+
+    def set_write_callback(self, msg_box):
+        self.fch.set_console_write_callback(msg_box.write)
 
     @pyqtSlot()
     def backup_saved(self):

@@ -122,6 +122,8 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.mbe = MessageByEvent(self.msg_box)
         self.mbe.prepare()
 
+        self.engine.set_write_callback(self.msg_box)
+
         self.start_engine()
 
     def _generate_buttons(self):
