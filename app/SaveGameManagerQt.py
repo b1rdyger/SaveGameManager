@@ -127,7 +127,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
     def _generate_buttons(self):
         # Buttons
         self.btn_start_game.clicked.connect(self.start_dsp)
-        self.btn_exit.clicked.connect(self.exit)
+        self.btn_exit.clicked.connect(self.close)
         self.btn_logoff_timer.clicked.connect(self.open_logoff_timer_window)
 
     def bind_sgm_emits(self):
