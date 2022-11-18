@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QMainWindow, QLabel, QPushButton
+from PyQt6.QtWidgets import QMainWindow, QLabel, QPushButton, QAbstractButton
 
 
 class SaveGameManagerUi(QMainWindow):

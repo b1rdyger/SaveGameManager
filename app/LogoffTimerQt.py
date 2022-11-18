@@ -3,8 +3,11 @@ import os
 from PyQt6 import uic
 from PyQt6.QtWidgets import QWidget
 
+from app.uiInterfaces.LogoffTimerUi import LogoffTimerUi
+
 
 class LogoffTimerQt(QWidget):
+    ui: LogoffTimerUi
     timer = None
 
     def __init__(self, root_dir, parent=None):
@@ -15,18 +18,19 @@ class LogoffTimerQt(QWidget):
         self.__setup()
 
     def __setup(self):
-        self.ui.btn_set_timer.clicked.connect(self.logofftimer_set)
-        self.ui.btn_cancel_timer.clicked.connect(self.logofftimer_cancel)
+        self.ui.btn_set_timer.clicked.connect(self.logoff_timer_set)
+        self.ui.btn_cancel_timer.clicked.connect(self.logoff_timer_cancel)
+
     def show(self):
         self.ui.show()
 
     def close(self):
         self.ui.hide()
 
-    def logofftimer_set(self):
+    def logoff_timer_set(self):
         self.timer = '1234'
         print('foo')
 
-    def logofftimer_cancel(self):
+    def logoff_timer_cancel(self):
         self.timer = None
         print('bar')

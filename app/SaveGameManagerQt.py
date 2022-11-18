@@ -14,7 +14,7 @@ from app.LogoffTimerQt import LogoffTimerQt
 from app.SGMSignals.MFSSignals import MFSSignals
 from app.SGMSignals.PCSignals import PCSignals
 from app.SGMSignals.SGMSignals import SGMSignals
-from app.SaveGameManagerUi import SaveGameManagerUi
+from app.uiInterfaces.SaveGameManagerUi import SaveGameManagerUi
 from app.widgets.MessageByEvent import MessageByEvent
 
 
