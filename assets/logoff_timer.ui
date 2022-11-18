@@ -23,17 +23,37 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="4" column="0">
-       <widget class="QDial" name="logoff_dial">
-        <property name="maximum">
-         <number>60</number>
+      <item row="4" column="1">
+       <widget class="QFrame" name="logoff_timer_ui">
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
         </property>
-        <property name="singleStep">
-         <number>1</number>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
         </property>
-        <property name="pageStep">
-         <number>3</number>
-        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0">
+          <widget class="QPushButton" name="btn_set_timer">
+           <property name="text">
+            <string>Set Timer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QPushButton" name="btn_cancel_timer">
+           <property name="text">
+            <string>Stop Timer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="btn_quit_timer">
+           <property name="text">
+            <string>Quit</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
       <item row="2" column="0" colspan="2">
@@ -52,30 +72,20 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QFrame" name="logoff_timer_ui">
-        <property name="frameShape">
-         <enum>QFrame::Box</enum>
+      <item row="4" column="0">
+       <widget class="QDial" name="logoff_dial">
+        <property name="minimum">
+         <number>0</number>
         </property>
-        <property name="frameShadow">
-         <enum>QFrame::Plain</enum>
+        <property name="maximum">
+         <number>60</number>
         </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0">
-          <widget class="QPushButton" name="btn_set_timer">
-           <property name="text">
-            <string>Set</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QPushButton" name="btn_cancel_timer">
-           <property name="text">
-            <string>Cancel</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="pageStep">
+         <number>3</number>
+        </property>
        </widget>
       </item>
       <item row="1" column="0" colspan="2">

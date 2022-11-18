@@ -85,7 +85,6 @@ class SaveGameManagerQt(SaveGameManagerUi):
         super().__init__()
         self.root_dir = root_dir
         self.signals = SGMSignals()
-
         # init Engine Thread
         self.engine = Engine(self.root_dir)
         self.engine_thread = QThread()
@@ -103,7 +102,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.setWindowIcon(logo)
 
         self.msg_box.prepare(self.root_dir)
-        self.new_window = LogoffTimerQt(self.root_dir)
+        self.new_window = LogoffTimerQt(self.root_dir,self)
 
         # self.text_log = self.msg_box()
         self.game_info.setText('')
