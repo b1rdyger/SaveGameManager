@@ -1,7 +1,8 @@
-from PyQt6.QtWidgets import QMainWindow, QLabel, QPushButton, QAbstractButton
+from PyQt6.QtWidgets import QMainWindow, QLabel, QPushButton
 
 
 class SaveGameManagerUi(QMainWindow):
+    logoff_label: QLabel
     game_info: QLabel
     arrow_up: QLabel
     arrow_down: QLabel

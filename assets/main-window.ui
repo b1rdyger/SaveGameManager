@@ -133,9 +133,9 @@
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="label">
+             <widget class="QLabel" name="logoff_label">
               <property name="text">
-               <string>Time to logoff: MM:SS</string>
+               <string>Time to logoff: Off</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>

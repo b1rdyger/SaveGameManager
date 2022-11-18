@@ -28,7 +28,6 @@ class LogoffTimerQt(QWidget):
         self.ui.hide()
 
     def logoff_timer_set(self):
-        self.timer = '1234'
         print('foo')
 
     def logoff_timer_cancel(self):
