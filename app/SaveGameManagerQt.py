@@ -10,6 +10,7 @@ from PyQt6.QtGui import QTextCharFormat, QBrush, QColor
 from PyQt6.QtWidgets import QTextEdit
 
 from app.Engine import Engine
+from app.LogoffTimerQt import LogoffTimerQt
 from app.SGMSignals.MFSSignals import MFSSignals
 from app.SGMSignals.PCSignals import PCSignals
 from app.SGMSignals.SGMSignals import SGMSignals
@@ -79,6 +80,7 @@ class MyCustomClass(object):
 
 class SaveGameManagerQt(SaveGameManagerUi):
     last_running_state = None
+
     def __init__(self, root_dir: str):
         super().__init__()
         self.root_dir = root_dir
@@ -98,6 +100,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
         sys.modules["MyCustomClass"] = MyCustomClass
         uic.loadUi(self.root_dir + os.sep + 'assets' + os.sep + 'main-window.ui', self)  # Load the .ui file
         self.msg_box.prepare(self.root_dir)
+        self.new_window = LogoffTimerQt(self.root_dir)
 
         # self.text_log = self.msg_box()
         self.game_info.setText('')
@@ -135,7 +138,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.pc_signals.running.connect(self.change_game_info_panel)
 
     def open_logoff_timer_window(self):
-        pass
+        self.new_window.show()
 
     @pyqtSlot()
     def arrow_to_ramdrive(self, at_ramdrive):
