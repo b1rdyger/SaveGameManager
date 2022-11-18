@@ -5,9 +5,9 @@ import sys
 from datetime import datetime
 
 from PyQt6 import uic, QtCore, QtGui
-from PyQt6.QtCore import QThread
+from PyQt6.QtCore import QThread, pyqtSlot
 from PyQt6.QtGui import QTextCharFormat, QBrush, QColor
-from PyQt6.QtWidgets import QTextEdit
+from PyQt6.QtWidgets import QTextEdit, QStyle
 
 from app.Engine import Engine
 from app.SGMSignals.MFSSignals import MFSSignals
@@ -118,7 +118,17 @@ class SaveGameManagerQt(SaveGameManagerUi):
 
     def bind_mfs_emits(self):
         self.mfs_signals.cleanedUp.connect(self.close)
-        # self.mfs_signals.writeToLog.connect(self.write_to_log())
+        self.mfs_signals.driveCreated.connect(self.ram_disk_mounted)
+        self.mfs_signals.symlinkCreated.connect(lambda: self.arrow_to_ramdrive(True))
+        self.mfs_signals.symlinkRemoved.connect(lambda: self.arrow_to_ramdrive(False))
+
+    @pyqtSlot()
+    def arrow_to_ramdrive(self, at_ramdrive):
+        pass
+
+    @pyqtSlot()
+    def ram_disk_mounted(self):
+        self.memory_save_game.setStyleSheet("QLabel { background-color : lime; color : black; }")
 
     def start_engine(self):
         self.signals.run_engine.emit()

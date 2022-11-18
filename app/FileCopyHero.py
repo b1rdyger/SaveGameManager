@@ -55,10 +55,10 @@ class FileCopyHero:
     def set_from_path(self, save_from: str):
         self.save_from = fr'{save_from}'
 
-    def start(self):
+    def start_observer(self):
         self.signals.start_observer.emit(self.save_from)
 
-    def stop(self):
+    def stop_observer(self):
         self.signals.stop_observer.emit()
 
     def add_save_block(self, save_to: SaveToBlock):
@@ -107,9 +107,10 @@ class FileCopyHero:
                 shutil.copy2(f'{savegame["file"]}', f'{self.save_from}')
                 self.console_log(f'[file:{savegame_filename_only}] successfully restored')
                 self.last_saved_or_restored_filename = savegame_filename_only
-                self.signals.restored.emit()
+                self.signals.restored.emit(savegame_filename_only)
             except Exception as e:
                 self.console_log(f'[error:{savegame_filename_only}] was not restored')
+                self.signals.not_restored.emit(savegame_filename_only)
                 logging.exception(e)
 
     def backup_files(self, files: list[str]):

@@ -59,11 +59,11 @@ class Engine(QObject):
         if ram_drive_letter is not None and self.fch.backup_for_symlink():
             self.mfs.create_symlink()
             self.fch.restore_last_save_from_backup()
-        self.fch.start()
+        self.fch.start_observer()
 
     @pyqtSlot()
     def stop(self):
-        self.fch.stop()
+        self.fch.stop_observer()
         self.mfs.stop()
 
     # def set_write_callback(self, co: msg_box):

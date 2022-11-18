@@ -1,6 +1,6 @@
 import re
 
-from PyQt6.QtCore import QObject, pyqtSlot, pyqtBoundSignal
+from PyQt6.QtCore import QObject, pyqtSlot
 
 from app.SGMSignals.FCHSignals import FCHSignals
 from app.SGMSignals.MFSSignals import MFSSignals
@@ -47,7 +47,8 @@ class MessageByEvent(QObject):
     def prepare(self):
         self.universal_bind(self.mfs_signals.symlinkCreated, 'Symlink created')
         self.universal_bind(self.mfs_signals.driveCreated, 'Drive [info:{str}:] created')
-        self.universal_bind(self.fch_signals.restored, 'Savegame file restored')
+        self.universal_bind(self.fch_signals.restored, 'Savegame file: [highlighted:"{str}"] restored')
+        self.universal_bind(self.fch_signals.not_restored, '[error:"{str}"] was not restored')
 
     def universal_bind(self, fn, msg):
         f, m, p = self.extract_emitter(fn)

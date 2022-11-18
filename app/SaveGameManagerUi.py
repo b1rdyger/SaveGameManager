@@ -7,3 +7,7 @@ class SaveGameManagerUi(QMainWindow):
     btn_exit = None
     btn_start_game = None
     msg_box = None
+    game_info: QLabel
+    memory_save_game: QLabel
+    default_save_game: QLabel  # RamDisk ready
+    backup_label: QLabel
