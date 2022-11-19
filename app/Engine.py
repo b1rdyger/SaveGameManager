@@ -32,25 +32,26 @@ class Engine(QObject):
                                 self.config.get('ignored_files'), self.config.get('compressed_save'))
         self.fch.set_from_path(self.config.get('common_save_dir'))
 
-        if not os.path.isdir(self.config.get('common_save_dir')):#TODO: Hier können keine EMITS durchgeführt werden wenn z.B. der Ornder Save fehlt
-            if os.path.islink(self.config.get('common_save_dir')):
-                os.rmdir(self.config.get('common_save_dir'))
-            os.mkdir(self.config.get('common_save_dir'))
-
         backup_folders = self.config.get('backup_save_dirs')
 
         for one_backup_folder in backup_folders:
             self.fch.add_save_block(SaveToBlock(one_backup_folder['location']))
 
-        self.mfs = MemoryFileSystemFacade(self.config.get('common_save_dir'),
-                                          self.hidden_tag_file).get_concrete()
-
         self.pc = ProcessChecker(self.config.get('process_name'))
 
         self.fch_signals.backup_successful.connect(self.backup_saved)
 
+
     def set_write_callback(self, msg_box):
         self.fch.set_console_write_callback(msg_box.write)
+
+    def check_save_path(self):
+        if not os.path.isdir(self.config.get('common_save_dir')):
+            self.mfs_signals.folder_not_found.emit(self.config.get('common_save_dir'))
+            if os.path.islink(self.config.get('common_save_dir')):
+                self.fch_signals.broken_link.emit(self.config.get('common_save_dir'))
+                os.rmdir(self.config.get('common_save_dir'))
+            os.mkdir(self.config.get('common_save_dir'))
 
     @pyqtSlot()
     def backup_saved(self):
@@ -60,6 +61,9 @@ class Engine(QObject):
     # engine thread
     @pyqtSlot()
     def run(self):
+        self.check_save_path()
+        self.mfs = MemoryFileSystemFacade(self.config.get('common_save_dir'),
+                                          self.hidden_tag_file).get_concrete()
         ram_drive_letter = self.mfs.create_or_just_get()
         if ram_drive_letter is not None and self.fch.backup_for_symlink() and self.mfs.create_symlink():
             self.fch.restore_last_save_from_backup()

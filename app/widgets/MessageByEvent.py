@@ -2,6 +2,7 @@ import re
 
 from PyQt6.QtCore import QObject, pyqtSlot
 
+from app.SGMSignals.EngineSignals import EngineSignals
 from app.SGMSignals.FCHSignals import FCHSignals
 from app.SGMSignals.MFSSignals import MFSSignals
 
@@ -41,6 +42,7 @@ class MessageByEvent(QObject):
         super().__init__()
         self.msg_box = msg_box
 
+        self.engine_signals = EngineSignals()
         self.mfs_signals = MFSSignals()
         self.fch_signals = FCHSignals()
 
