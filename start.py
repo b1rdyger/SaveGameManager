@@ -4,7 +4,6 @@ import sys
 
 from PyQt6.QtWidgets import QApplication
 
-from app.Engine import Engine
 from app.SaveGameManagerQt import SaveGameManagerQt
 
 if __name__ == '__main__':

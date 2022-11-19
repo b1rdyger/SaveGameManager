@@ -1,4 +1,3 @@
-import fnmatch
 import glob
 import logging
 import os
@@ -77,7 +76,7 @@ class FileCopyHero:
     def callback_file_created(self, filename: str):
         is_ignored = len([i for i in [re.search(x, filename) for x in self.ignored_files] if i is not None]) > 0
         if filename.startswith('[Recovery]-'):
-            self.restore_last_save_from_backup(exclude_observer=True)
+            self.restore_last_save_from_backup(True, filename)
         if not is_ignored:
             self.smart_backup()
 
@@ -100,7 +99,7 @@ class FileCopyHero:
                 self.smart_backup(tryy+1)
 
     # noinspection PyTypeChecker
-    def restore_last_save_from_backup(self, exclude_observer=False) -> bool:
+    def restore_last_save_from_backup(self, exclude_observer=False, filename=None) -> bool:
         first_backup_block = next(iter(self.save_to_list or []), None)
         if not first_backup_block:
             return False
@@ -111,20 +110,31 @@ class FileCopyHero:
         dts = (d0['mtime']-d1['mtime'] for d0, d1 in zip(files, files[1:]))
         split_at = [i for i, dt in enumerate(dts, 1) if dt >= split_dt]
         groups = [files[i:j] for i, j in zip([0]+split_at, split_at+[None])]
-
+        if exclude_observer:
+            self.signals.start_rename.emit()
         for savegame in groups[0]:
             savegame_filename_only = savegame['file'].split('\\')[-1]
             try:
                 if exclude_observer:
-                    self.ignored_files.append(savegame["file"])
-                    os.rename(savegame["file"], f'[Recovery]-{savegame["file"]}')
+                    if filename.__contains__(savegame_filename_only):
+                        while self.is_file_in_use(f'{self.save_from}{os.sep}{savegame_filename_only}'):
+                            # self.console_log(f'[error: File "{savegame_filename_only}"] in use, waiting')
+                            self.signals.cannot_use.emit(savegame_filename_only)
+                            time.sleep(0.25)
+                        os.remove(f'{self.save_from}{os.sep}{savegame_filename_only}')
+                        self.last_saved_or_restored_filename = f'{savegame_filename_only}'
+                        self.signals.renamed.emit(self.last_saved_or_restored_filename) #TODO: fix me, "]" wird falsch interpretiert!!
+                        continue
+                    else:
+                        os.rename(f'{self.save_from}{os.sep}{savegame_filename_only}', f'{self.save_from}{os.sep}[Recovery]-{savegame_filename_only}')
+                        self.last_saved_or_restored_filename = f'[Recovery]-{savegame_filename_only}' #TODO: fix me, "]" wird falsch interpretiert!!
+                        self.signals.renamed.emit(self.last_saved_or_restored_filename)
                 else:
                     shutil.copy2(f'{savegame["file"]}', f'{self.save_from}')
-                self.console_log(f'[file:{savegame_filename_only}] successfully restored')
-                self.last_saved_or_restored_filename = savegame_filename_only
-                self.signals.restored.emit(savegame_filename_only)
+                    self.last_saved_or_restored_filename = savegame_filename_only
+                    self.signals.restored.emit(savegame_filename_only)
             except Exception as e:
-                self.console_log(f'[error:{savegame_filename_only}] was not restored')
+
                 self.signals.not_restored.emit(savegame_filename_only)
                 logging.exception(e)
 
@@ -152,14 +162,37 @@ class FileCopyHero:
             first_backup_path = first_backup_path.path
         if os.path.isdir(self.save_from):
             if not os.path.isdir(first_backup_path):
-                os.mkdir(first_backup_path)
+                try:
+                    os.mkdir(first_backup_path)
+                except Exception as e:
+                    print(f'Tried to create {first_backup_path} Error:\n{e}')
             files_in_save = os.listdir(self.save_from)
             if files_in_save not in [None, '']:
                 for file_name in files_in_save:
                     if file_name != self.hidden_tag_file:
-                        shutil.copy2(os.path.join(self.save_from, file_name), first_backup_path)
-                        time.sleep(0.3)
-                        os.remove(os.path.join(self.save_from, file_name))
-            os.rmdir(self.save_from)
+                        try:
+                            shutil.copy2(os.path.join(self.save_from, file_name), first_backup_path)
+                            time.sleep(0.3)
+                            os.remove(os.path.join(self.save_from, file_name))
+                        except Exception as e:
+                            print(f'Tried to move and delete {file_name} Error:\n{e}')
+
+            try:
+                os.rmdir(self.save_from)
+            except Exception as e:
+                print(f'Tried to remove {self.save_from} Error:\n{e}')
             return True
         return False
+
+    def is_file_in_use(self, file_path):
+        path = Path(file_path)
+
+        if not path.exists():
+            raise FileNotFoundError
+
+        try:
+            path.rename(path)
+        except PermissionError:
+            return True
+        else:
+            return False

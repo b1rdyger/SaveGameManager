@@ -60,8 +60,7 @@ class Engine(QObject):
     @pyqtSlot()
     def run(self):
         ram_drive_letter = self.mfs.create_or_just_get()
-        if ram_drive_letter is not None and self.fch.backup_for_symlink():
-            self.mfs.create_symlink()
+        if ram_drive_letter is not None and self.fch.backup_for_symlink() and self.mfs.create_symlink():
             self.fch.restore_last_save_from_backup()
         self.fch.start_observer()
 
@@ -87,3 +86,5 @@ class Engine(QObject):
             # logger.info(f'{path.replace("%USERPROFILE%", new_path)}')
             return path.replace("%USERPROFILE%", new_path)
         return path
+
+
