@@ -46,12 +46,17 @@ class Engine(QObject):
         self.fch.set_console_write_callback(msg_box.write)
 
     def check_save_path(self):
-        if not os.path.isdir(self.config.get('common_save_dir')):
-            self.mfs_signals.folder_not_found.emit(self.config.get('common_save_dir'))
-            if os.path.islink(self.config.get('common_save_dir')):
-                self.fch_signals.broken_link.emit(self.config.get('common_save_dir'))
-                os.rmdir(self.config.get('common_save_dir'))
-            os.mkdir(self.config.get('common_save_dir'))
+        savegame_path = self.config.get('common_save_dir')
+        self.signals.check_safegame_folder.emit(savegame_path)
+
+        if not os.path.isdir(savegame_path):
+            self.mfs_signals.folder_not_found.emit(savegame_path)
+            if os.path.islink(savegame_path):
+                self.fch_signals.broken_link.emit(savegame_path)
+                os.rmdir(savegame_path)
+            os.mkdir(savegame_path)
+        self.signals.folder_found.emit(savegame_path)
+
 
     @pyqtSlot()
     def backup_saved(self):

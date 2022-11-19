@@ -49,6 +49,9 @@ class MessageByEvent(QObject):
     def prepare(self):
         #engine_signals
         self.universal_bind(self.engine_signals.engine_started, '[success:Engine started!]')
+        self.universal_bind(self.engine_signals.check_safegame_folder, '[highlighted:Check Savefolder: "{str}"]')
+        self.universal_bind(self.engine_signals.folder_found, '[success:Folder "{str}" found]')
+
 
         #mfs_signals
         self.universal_bind(self.mfs_signals.symlinkCreated, '[success:Symlink created]')
