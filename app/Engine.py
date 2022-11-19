@@ -27,7 +27,8 @@ class Engine(QObject):
         self.signals = EngineSignals()
         self.fch_signals = FCHSignals()
 
-        self.fch = FileCopyHero(self.hidden_tag_file, self.config.get('ignored_files'))
+        self.fch = FileCopyHero(self.hidden_tag_file,
+                                self.config.get('ignored_files'), self.config.get('compressed_save'))
         self.fch.set_from_path(self.config.get('common_save_dir'))
 
         if not os.path.exists(os.path.join(self.config.get('common_save_dir'))):

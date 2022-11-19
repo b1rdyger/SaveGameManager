@@ -1,6 +1,8 @@
+import fnmatch
 import glob
 import logging
 import os
+import re
 import shutil
 import time
 from dataclasses import dataclass
@@ -27,13 +29,14 @@ class FileCopyHero:
     log: callable = None
     last_saved_or_restored_filename: str = None
 
-    def __init__(self, hidden_tag_file, ignored_files):
+    def __init__(self, hidden_tag_file, ignored_files, compressed_save):
         self.hidden_tag_file = hidden_tag_file
         self.ignored_files = ignored_files
+        self.compressed_save = compressed_save
 
         self.signals = FCHSignals()
 
-        self.fco = FileCreatedObserver(self.smart_backup, self.ignored_files)
+        self.fco = FileCreatedObserver(self.callback_file_created)
         self.fco_thread = QThread()
         self.fco.moveToThread(self.fco_thread)
         self.fco_thread.start()
@@ -71,6 +74,13 @@ class FileCopyHero:
         if files_in_save not in [None, '']:
             self.backup_files(files_in_save)
 
+    def callback_file_created(self, filename: str):
+        is_ignored = len([i for i in [re.search(x, filename) for x in self.ignored_files] if i is not None]) > 0
+        if filename.startswith('[Recovery]-'):
+            self.restore_last_save_from_backup(exclude_observer=True)
+        if not is_ignored:
+            self.smart_backup()
+
     # save everything everywhere according to the configuration
     def smart_backup(self, tryy=0) -> bool:
         if tryy == 5:
@@ -90,7 +100,7 @@ class FileCopyHero:
                 self.smart_backup(tryy+1)
 
     # noinspection PyTypeChecker
-    def restore_last_save_from_backup(self) -> bool:
+    def restore_last_save_from_backup(self, exclude_observer=False) -> bool:
         first_backup_block = next(iter(self.save_to_list or []), None)
         if not first_backup_block:
             return False
@@ -105,7 +115,11 @@ class FileCopyHero:
         for savegame in groups[0]:
             savegame_filename_only = savegame['file'].split('\\')[-1]
             try:
-                shutil.copy2(f'{savegame["file"]}', f'{self.save_from}')
+                if exclude_observer:
+                    self.ignored_files.append(savegame["file"])
+                    os.rename(savegame["file"], f'[Recovery]-{savegame["file"]}')
+                else:
+                    shutil.copy2(f'{savegame["file"]}', f'{self.save_from}')
                 self.console_log(f'[file:{savegame_filename_only}] successfully restored')
                 self.last_saved_or_restored_filename = savegame_filename_only
                 self.signals.restored.emit(savegame_filename_only)
