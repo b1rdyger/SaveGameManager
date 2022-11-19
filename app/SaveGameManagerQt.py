@@ -6,7 +6,7 @@ from datetime import datetime
 
 from PyQt6 import uic, QtCore, QtGui
 from PyQt6.QtCore import QThread, pyqtSlot
-from PyQt6.QtGui import QTextCharFormat, QBrush, QColor
+from PyQt6.QtGui import QTextCharFormat, QBrush, QColor, QTextCursor
 from PyQt6.QtWidgets import QTextEdit
 
 from app.Engine import Engine
@@ -25,6 +25,9 @@ class MyCustomClass(object):
     class SGMTextBrowser(QTextEdit):
         tag = {}
         script_dir = None
+        last_message = None
+        last_message_counter = 0
+        last_cursor_position = None
 
         def __int__(self, *args):
             QTextEdit.__init__(self, *args)
@@ -49,12 +52,27 @@ class MyCustomClass(object):
             self.setReadOnly(True)
             self.setUndoRedoEnabled(False)
 
-        def write(self, msg):
+        def write(self, msg, merge_lines=True):
             now = datetime.now().strftime("%H:%M:%S")
             bla = self.textCursor()
+            regex_search_in_string = '\\[\[([a-zA-Z0-9]+):(.*?)]]'
+            if merge_lines and msg is self.last_message:
+                self.last_message_counter += 1
+                msg += f' [[info:({self.last_message_counter}x)]]'
+                bla = self.textCursor()
+                bla.setPosition(self.last_cursor_position, QTextCursor.MoveMode.KeepAnchor)
+                self.moveCursor(QTextCursor.MoveOperation.StartOfLine, QTextCursor.MoveMode.MoveAnchor)
+                bla.removeSelectedText()
+                self.setTextCursor(bla)
+                self.update()
+            else:
+                self.last_message = msg
+                self.last_message_counter = 0
+
+            self.last_cursor_position = self.textCursor().position()
+
             bla.setCharFormat(self.tag['timestamp'])
             bla.insertText(f'[{str(now)}] ')
-            regex_search_in_string = '\\[\[([a-zA-Z0-9]+):(.*?)]]'
 
             while msg != "":
                 if matched := re.search(regex_search_in_string, msg):
@@ -78,10 +96,7 @@ class MyCustomClass(object):
                     break
             bla.insertHtml('<br />')
 
-            # self.verticalScrollBar().setValue(self.verticalScrollBar().maximum())
             self.ensureCursorVisible()
-
-
 
 
 class SaveGameManagerQt(SaveGameManagerUi):

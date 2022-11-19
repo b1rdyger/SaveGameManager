@@ -11,13 +11,14 @@ from app.utils.DateUtils import DateUtils
 
 
 class SignalMemory(QObject):
-    def __init__(self, func, method, param_tpes, message_box, message):
+    def __init__(self, func, method, param_tpes, message_box, message, merge_lines):
         super().__init__()
         self.func = func
         self.method = method
         self.slot = param_tpes
         self.message_box = message_box
         self.message = message
+        self.merge_lines = merge_lines
 
     def get_slot(self):
         match self.slot:
@@ -32,15 +33,17 @@ class SignalMemory(QObject):
 
     @pyqtSlot()
     def parse(self):
-        self.message_box.write(self.message)
+        self.message_box.write(self.message, self.merge_lines)
         print(self.message)
 
     @pyqtSlot(str)
     def parse_str(self, q_str: str):
-        self.message_box.write(self.message.replace('{str}', q_str))
+        self.message_box.write(self.message.replace('{str}', q_str), self.merge_lines)
+
     @pyqtSlot(datetime)
     def parse_datetime(self, q_datetime: str):
-        self.message_box.write(self.message.replace('{datetime}', DateUtils.get_formated_time(q_datetime)))
+        self.message_box.write(self.message.replace('{datetime}', DateUtils.get_formated_time(q_datetime)),
+                               self.merge_lines)
 
 
 class MessageByEvent(QObject):
@@ -56,41 +59,49 @@ class MessageByEvent(QObject):
         self.lt_signals = LTSignals()
 
     def prepare(self):
-        #engine_signals
+        # engine_signals
         self.universal_bind(self.engine_signals.engine_started, '[[success:Engine started!]]')
         self.universal_bind(self.engine_signals.check_safegame_folder, '[[highlighted:Check Savefolder: "{str}"]]')
         self.universal_bind(self.engine_signals.folder_found, '[[success:Folder "{str}" found]]')
 
-        #lt_singals
-        self.universal_bind(self.lt_signals.shutdown_initiated, '[[highlighted:Attention! SYSTEM will shutdown after {datetime} next backup]]')
-        self.universal_bind(self.lt_signals.shutdown_wait_for_backup, '[[error:Attention! SYSTEM will shutdown after next backup]]')
+        # lt_singals
+        self.universal_bind(self.lt_signals.shutdown_initiated,
+                            '[[highlighted:Attention! SYSTEM will shutdown after {datetime} next backup]]',
+                            merge_lines=False)
+        self.universal_bind(self.lt_signals.shutdown_wait_for_backup,
+                            '[[error:Attention! SYSTEM will shutdown after next backup]]', merge_lines=False)
         self.universal_bind(self.lt_signals.shutdown_abort, '[[success:Shutdown abort!]]')
 
-        #mfs_signals
+        # mfs_signals
         self.universal_bind(self.mfs_signals.symlinkCreated, '[[success:Symlink created]]')
         self.universal_bind(self.mfs_signals.driveCreated, '[[success:Drive]] [[info:"{str}:"]] [[success:created]]')
         self.universal_bind(self.mfs_signals.folder_not_found, '[[error:Folder "{str}"]] not found! Try to create it')
         self.universal_bind(self.mfs_signals.folder_created, '[[success:Folder "{str}"]] created')
         self.universal_bind(self.mfs_signals.folder_not_empty, '[[error:Folder "{str}"]] not empty!')
 
-        #fch_signals
-        self.universal_bind(self.fch_signals.restored, '[[success:Savegame file:]] [[highlighted:"{str}"]] [[success:restored]]')
+        # fch_signals
+        self.universal_bind(self.fch_signals.restored,
+                            '[[success:Savegame file:]] [[highlighted:"{str}"]] [[success:restored]]')
         self.universal_bind(self.fch_signals.not_restored, '[[error:"{str}" was not restored]]')
-        self.universal_bind(self.fch_signals.renamed, '[[success:Savegame file:]] [[highlighted:{str}]] [[success:renamed]]')
-        self.universal_bind(self.fch_signals.start_rename, '[[error:Attention:]] Safegamefiles will be renamed, [[info:pls be patient]]')
-        self.universal_bind(self.fch_signals.cannot_use, '[[error:File "{str}"]] in use, waiting')
+        self.universal_bind(self.fch_signals.renamed,
+                            '[[success:Savegame file:]] [[highlighted:{str}]] [[success:renamed]]')
+        self.universal_bind(self.fch_signals.start_rename,
+                            '[[error:Attention:]] Savegame files will be renamed, [[info:pls be patient]]')
+        self.universal_bind(self.fch_signals.cannot_use, '[[error:File "{str}"]] in use, waiting', merge_lines=False)
         self.universal_bind(self.fch_signals.folder_not_found, '[[error:Folder "{str}"]] not found! Try to create it')
         self.universal_bind(self.fch_signals.folder_created, '[[success:Folder "{str}"]] created')
         self.universal_bind(self.fch_signals.broken_link, '[[error:Link "{str}"]] broken, recreate it!')
 
         self.universal_bind(self.fch_signals.backup_start, '[[highlighted:Starte Smart backup]]')
-        self.universal_bind(self.fch_signals.backup_fails, '[[error:Smart backup fehlgeschlagen! Bitte manuelles Backup vornehmen!]]')
+        self.universal_bind(self.fch_signals.backup_fails,
+                            '[[error:Smart backup fehlgeschlagen! Bitte manuelles Backup vornehmen!]]')
         self.universal_bind(self.fch_signals.backuped_up_file, '[[success:File "{str}" backed up]]')
-        self.universal_bind(self.fch_signals.smart_backup_finished, '[[error:Smart backup fehlgeschlagen! Bitte manuelles Backup vornehmen!]]')
+        self.universal_bind(self.fch_signals.smart_backup_finished,
+                            '[[error:Smart backup fehlgeschlagen! Bitte manuelles Backup vornehmen!]]')
 
-    def universal_bind(self, fn, msg):
+    def universal_bind(self, fn, msg, merge_lines=True):
         f, m, p = self.extract_emitter(fn)
-        sm = SignalMemory(f, m, p, self.msg_box, msg)
+        sm = SignalMemory(f, m, p, self.msg_box, msg, merge_lines)
         self.bind_list.append(sm)
         fn.connect(sm.get_slot())
 
