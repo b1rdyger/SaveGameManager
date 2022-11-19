@@ -19,7 +19,7 @@ class LogoffTimerQt(QWidget):
         super(LogoffTimerQt, self).__init__(parent)
         self.parent = parent
         self.root_dir = root_dir
-        self.ui = uic.loadUi(self.root_dir + os.sep + 'assets' + os.sep + 'logoff_timer.ui')
+        self.ui = uic.loadUi(self.root_dir + os.sep + 'assets' + os.sep + 'logoff-timer.ui')
         self.__setup()
 
     def __setup(self):

@@ -16,6 +16,7 @@ class Engine(QObject):
     config = None
     hidden_tag_file = '.tag-ram'
     want_shutdown = False
+    mfs = None
 
     def __init__(self, root_dir):
         super().__init__()
@@ -41,7 +42,6 @@ class Engine(QObject):
 
         self.fch_signals.backup_successful.connect(self.backup_saved)
 
-
     def set_write_callback(self, msg_box):
         self.fch.set_console_write_callback(msg_box.write)
 
@@ -56,7 +56,6 @@ class Engine(QObject):
                 os.rmdir(savegame_path)
             os.mkdir(savegame_path)
         self.signals.folder_found.emit(savegame_path)
-
 
     @pyqtSlot()
     def backup_saved(self):
@@ -78,7 +77,8 @@ class Engine(QObject):
     @pyqtSlot()
     def stop(self):
         self.fch.stop_observer()
-        self.mfs.stop()
+        if self.mfs:
+            self.mfs.stop()
 
     def load_profile(self):
         profiles = self.config.get('profiles')
