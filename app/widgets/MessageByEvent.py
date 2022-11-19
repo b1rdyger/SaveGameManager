@@ -34,7 +34,6 @@ class SignalMemory(QObject):
     @pyqtSlot()
     def parse(self):
         self.message_box.write(self.message, self.merge_lines)
-        print(self.message)
 
     @pyqtSlot(str)
     def parse_str(self, q_str: str):

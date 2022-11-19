@@ -21,7 +21,6 @@ class MemoryFileSystem:
         self.signals = MFSSignals()
 
     def __replace_path_with_symlink(self) -> bool:
-        print(self.save_path)
         if os.listdir(self.save_path):
             self.signals.folder_not_empty.emit(self.save_path)
             return False

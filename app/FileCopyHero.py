@@ -139,7 +139,6 @@ class FileCopyHero:
                 logging.exception(e)
 
     def backup_files(self, files: list[str]):
-        print('test')
         for save_to in self.save_to_list:
             if not os.path.isdir(save_to.path):
                 self.signals.folder_not_found.emit(save_to.path)
