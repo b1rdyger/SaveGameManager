@@ -3,8 +3,7 @@ import time
 
 from psutil import NoSuchProcess, AccessDenied, process_iter
 
-from app import EventBus
-from app.SGMEvents.PCEvents import PCRunning
+from app.SGMSignals.PCSignals import PCSignals
 
 
 class ProcessChecker:
@@ -12,10 +11,11 @@ class ProcessChecker:
     checker_running = False
     process_running = False
 
-    def __init__(self, event_bus: EventBus, process_name: str):
-        self.event_bus = event_bus
+    def __init__(self, process_name: str):
         self.process_name = process_name.lower()
         self.checker_running = True
+        self.signal = PCSignals()
+        
         self.t = threading.Thread(target=self.check_if_process_running, daemon=True)
         self.t.start()
 
@@ -32,5 +32,5 @@ class ProcessChecker:
                         self.process_running = True
                 except (NoSuchProcess, AccessDenied):
                     self.process_running = False
-            self.event_bus.emit(PCRunning, self.process_running)
+            self.signal.running.emit(self.process_running)
             time.sleep(1)

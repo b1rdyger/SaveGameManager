@@ -5,25 +5,28 @@ from ctypes import windll
 import numpy as np
 from fs.osfs import OSFS
 
-from app import EventBus
-from app.SGMEvents.MFSEvents import *
+from app.SGMSignals.MFSSignals import MFSSignals
 
 
 class MemoryFileSystem:
     possible_drives = ['R', 'S', 'T', 'V']  # https://en.wikipedia.org/wiki/Drive_letter_assignment#Common_assignments
     ram_drive: str = None
 
-    def __init__(self, save_path, event_bus: EventBus, hidden_tag_file: str):
-        self._event_bus = event_bus
+    def __init__(self, save_path, hidden_tag_file: str):
+        super(MemoryFileSystem, self).__init__()
+
         self.save_path = save_path
         self.hidden_tag_file = hidden_tag_file
 
+        self.signals = MFSSignals()
+
     def __replace_path_with_symlink(self) -> bool:
+        print(self.save_path)
         if os.listdir(self.save_path):
-            self._event_bus.emit(MFSSavePathNotEmpty)
+            self.signals.folder_not_empty.emit(self.save_path)
             return False
         if not os.path.isdir(self.save_path):
-            self._event_bus.emit(MFSSavePathDoesNotExists)
+            self.signals.folder_not_found.emit(self.save_path)
             return False
         os.rmdir(self.save_path)
         self.create_symlink()
@@ -41,6 +44,7 @@ class MemoryFileSystem:
         for letter in drives:
             if os.path.isfile(letter + ':\\' + self.hidden_tag_file):
                 self.ram_drive = letter
+                self.signals.driveCreated.emit(self.ram_drive)
                 return self.ram_drive
         if all_good_drives := [i for i in self.possible_drives if i not in drives]:
             first_good_drive = all_good_drives[0]
@@ -57,7 +61,7 @@ class MemoryFileSystem:
             OSFS(f'{letter}:\\').create(self.hidden_tag_file)
             os.system(f'attrib +H {letter}' + ':\\' + self.hidden_tag_file)
             self.ram_drive = letter
-            self._event_bus.emit(MFSDriveCreated)
+            self.signals.driveCreated.emit(self.ram_drive)
             return True
         return False
 
@@ -67,7 +71,7 @@ class MemoryFileSystem:
         if ram_drive_letter:
             ret = os.system(f'imdisk -D -m "{ram_drive_letter}:"') == 0
             if ret:
-                self._event_bus.emit(MFSDriveDestroyed)
+                self.signals.driveDestroyed.emit()
             return ret
         return True
 
@@ -81,7 +85,7 @@ class MemoryFileSystem:
         try:
             os.symlink(self.ram_drive + ':\\', self.save_path)
             if os.readlink(self.save_path):
-                self._event_bus.emit(MFSSymlinkCreated)
+                self.signals.symlinkCreated.emit()
                 return True
         finally:
             pass
@@ -91,10 +95,11 @@ class MemoryFileSystem:
         if os.path.islink(self.save_path):
             os.rmdir(self.save_path)
             os.mkdir(self.save_path)
-            self._event_bus.emit(MFSSymlinkRemoved)
+            self.signals.symlinkRemoved.emit()
             return True
         return False
 
-    def __del__(self):
+    def stop(self):
         self.__destroy_ram_drive()
         self.restore_save_empty()
+        self.signals.cleanedUp.emit()
