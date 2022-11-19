@@ -3,6 +3,7 @@ import os
 
 from PyQt6 import uic
 from PyQt6.QtWidgets import QWidget
+from PyQt6.uic.properties import QtCore, QtGui
 
 from app.SGMSignals.LTSignals import LTSignals
 from app.uiInterfaces.LogoffTimerUi import LogoffTimerUi
@@ -23,6 +24,9 @@ class LogoffTimerQt(QWidget):
         self.ui = uic.loadUi(self.root_dir + os.sep + 'assets' + os.sep + 'logoff-timer.ui')
         self.__setup()
         self.signals = LTSignals()
+        QtCore.QDir.addSearchPath('icons', self.root_dir + os.sep + 'assets')
+        logo = QtGui.QIcon('icons:logo/disk1-256.png')
+        self.setWindowIcon(logo)
 
     def __setup(self):
         self.ui.btn_set_timer.clicked.connect(self.logoff_set_timer)

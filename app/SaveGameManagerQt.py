@@ -104,7 +104,6 @@ class SaveGameManagerQt(SaveGameManagerUi):
         icon = QtGui.QPixmap('icons:arrow_right.png')
         logo = QtGui.QIcon('icons:logo/disk1-256.png')
 
-
         # noinspection PyTypeChecker
         sys.modules["MyCustomClass"] = MyCustomClass
         uic.loadUi(self.root_dir + os.sep + 'assets' + os.sep + 'main-window.ui', self)  # Load the .ui file
