@@ -76,16 +76,12 @@ class MessageByEvent(QObject):
         #fch_signals
         self.universal_bind(self.fch_signals.restored, '[[success:Savegame file:]] [[highlighted:"{str}"]] [[success:restored]]')
         self.universal_bind(self.fch_signals.not_restored, '[[error:"{str}" was not restored]]')
-        self.universal_bind(self.fch_signals.renamed, '[[success:Savegame file:] [highlighted:{str}] [[success:renamed]]')
+        self.universal_bind(self.fch_signals.renamed, '[[success:Savegame file:]] [[highlighted:{str}]] [[success:renamed]]')
         self.universal_bind(self.fch_signals.start_rename, '[[error:Attention:]] Safegamefiles will be renamed, [[info:pls be patient]]')
         self.universal_bind(self.fch_signals.cannot_use, '[[error:File "{str}"]] in use, waiting')
         self.universal_bind(self.fch_signals.folder_not_found, '[[error:Folder "{str}"]] not found! Try to create it')
         self.universal_bind(self.fch_signals.folder_created, '[[success:Folder "{str}"]] created')
         self.universal_bind(self.fch_signals.broken_link, '[[error:Link "{str}"]] broken, recreate it!')
-
-
-
-
 
     def universal_bind(self, fn, msg):
         f, m, p = self.extract_emitter(fn)
