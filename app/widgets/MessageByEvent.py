@@ -60,7 +60,6 @@ class MessageByEvent(QObject):
         self.universal_bind(self.engine_signals.engine_started, '[[success:Engine started!]]')
         self.universal_bind(self.engine_signals.check_safegame_folder, '[[highlighted:Check Savefolder: "{str}"]]')
         self.universal_bind(self.engine_signals.folder_found, '[[success:Folder "{str}" found]]')
-        self.universal_bind(self.engine_signals.folder_found, '[[success:Folder "{str}" found]]')
 
         #lt_singals
         self.universal_bind(self.lt_signals.shutdown_initiated, '[[highlighted:Attention! SYSTEM will shutdown after {datetime} next backup]]')
