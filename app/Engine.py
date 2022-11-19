@@ -61,6 +61,7 @@ class Engine(QObject):
     # engine thread
     @pyqtSlot()
     def run(self):
+        self.signals.engine_started.emit()
         self.check_save_path()
         self.mfs = MemoryFileSystemFacade(self.config.get('common_save_dir'),
                                           self.hidden_tag_file).get_concrete()

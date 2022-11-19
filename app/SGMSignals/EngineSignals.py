@@ -5,3 +5,4 @@ from app.SGMSignals._SGMSignalObjects import SGMSignalObjects
 
 class EngineSignals(SGMSignalObjects):
     shutdown_allowed = pyqtSignal()
+    engine_started = pyqtSignal()

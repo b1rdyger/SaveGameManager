@@ -47,6 +47,9 @@ class MessageByEvent(QObject):
         self.fch_signals = FCHSignals()
 
     def prepare(self):
+        #engine_signals
+        self.universal_bind(self.engine_signals.engine_started, '[success:Engine started!]')
+
         #mfs_signals
         self.universal_bind(self.mfs_signals.symlinkCreated, '[success:Symlink created]')
         self.universal_bind(self.mfs_signals.driveCreated, '[success:Drive] [info:"{str}:"] [success:created]')
