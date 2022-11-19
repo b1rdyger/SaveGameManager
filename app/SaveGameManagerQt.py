@@ -32,10 +32,11 @@ class MyCustomClass(object):
 
         def prepare(self, script_dir):
             self.script_dir = script_dir
+            regex_search_in_css = '--([a-zA-Z0-9_-]+)\\s*:\\s*(#[a-zA-Z0-9]{3,6});'
             with open(f'{self.script_dir}app{os.sep}widgets{os.sep}tag_colors.css', mode='r') as file:
                 tag_colors_css = file.read()
             all_tags = {}
-            while found := re.search('--([a-zA-Z0-9_-]+)\\s*:\\s*(#[a-zA-Z0-9]{3,6});', tag_colors_css):
+            while found := re.search(regex_search_in_css, tag_colors_css):
                 tag_name = found[1]
                 tag_color = found[2]
                 all_tags[tag_name] = tag_color
@@ -52,9 +53,10 @@ class MyCustomClass(object):
             bla = self.textCursor()
             bla.setCharFormat(self.tag['timestamp'])
             bla.insertText(f'[{str(now)}] ')
+            regex_search_in_string = '\\[\[([a-zA-Z0-9]+):(.*?)]]'
 
             while msg != "":
-                if matched := re.search('\\[([a-zA-Z0-9]+):(.*?)]', msg):
+                if matched := re.search(regex_search_in_string, msg):
                     all_start, _ = matched.span(0)
                     sub_msg_start, sub_msg_end = matched.span(2)
                     tag = matched[1]
@@ -68,7 +70,7 @@ class MyCustomClass(object):
                     sub_msg_end -= sub_msg_start
                     bla.setCharFormat(self.tag[tag])
                     bla.insertText(f'{msg[:sub_msg_end]}')
-                    msg = msg[sub_msg_end + 1:]
+                    msg = msg[sub_msg_end + 2:]
                 else:
                     bla.setCharFormat(self.tag['default'])
                     bla.insertText(f'{str(msg)}')

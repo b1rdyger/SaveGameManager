@@ -48,27 +48,27 @@ class MessageByEvent(QObject):
 
     def prepare(self):
         #engine_signals
-        self.universal_bind(self.engine_signals.engine_started, '[success:Engine started!]')
-        self.universal_bind(self.engine_signals.check_safegame_folder, '[highlighted:Check Savefolder: "{str}"]')
-        self.universal_bind(self.engine_signals.folder_found, '[success:Folder "{str}" found]')
+        self.universal_bind(self.engine_signals.engine_started, '[[success:Engine started!]]')
+        self.universal_bind(self.engine_signals.check_safegame_folder, '[[highlighted:Check Savefolder: "{str}"]]')
+        self.universal_bind(self.engine_signals.folder_found, '[[success:Folder "{str}" found]]')
 
 
         #mfs_signals
-        self.universal_bind(self.mfs_signals.symlinkCreated, '[success:Symlink created]')
-        self.universal_bind(self.mfs_signals.driveCreated, '[success:Drive] [info:"{str}:"] [success:created]')
-        self.universal_bind(self.mfs_signals.folder_not_found, '[error:Folder "{str}"] not found! Try to create it')
-        self.universal_bind(self.mfs_signals.folder_created, '[success:Folder "{str}"] created')
-        self.universal_bind(self.mfs_signals.folder_not_empty, '[error:Folder "{str}"] not empty!')
+        self.universal_bind(self.mfs_signals.symlinkCreated, '[[success:Symlink created]]')
+        self.universal_bind(self.mfs_signals.driveCreated, '[[success:Drive]] [[info:"{str}:"]] [[success:created]]')
+        self.universal_bind(self.mfs_signals.folder_not_found, '[[error:Folder "{str}"]] not found! Try to create it')
+        self.universal_bind(self.mfs_signals.folder_created, '[[success:Folder "{str}"]] created')
+        self.universal_bind(self.mfs_signals.folder_not_empty, '[[error:Folder "{str}"]] not empty!')
 
         #fch_signals
-        self.universal_bind(self.fch_signals.restored, '[success:Savegame file:] [highlighted:"{str}"] [success:restored]')
-        self.universal_bind(self.fch_signals.not_restored, '[error:"{str}" was not restored]]')
-        self.universal_bind(self.fch_signals.renamed, '[success:Savegame file:] [highlighted:{str}] [success:renamed]')
-        self.universal_bind(self.fch_signals.start_rename, '[error:Attention:] Safegamefiles will be renamed, [info:pls be patient]')
-        self.universal_bind(self.fch_signals.cannot_use, '[error:File "{str}"] in use, waiting')
-        self.universal_bind(self.fch_signals.folder_not_found, '[error:Folder "{str}"] not found! Try to create it')
-        self.universal_bind(self.fch_signals.folder_created, '[success:Folder "{str}"] created')
-        self.universal_bind(self.fch_signals.broken_link, '[error:Link "{str}"] broken, recreate it!')
+        self.universal_bind(self.fch_signals.restored, '[[success:Savegame file:]] [[highlighted:"{str}"]] [[success:restored]]')
+        self.universal_bind(self.fch_signals.not_restored, '[[error:"{str}" was not restored]]')
+        self.universal_bind(self.fch_signals.renamed, '[[success:Savegame file:] [highlighted:{str}] [[success:renamed]]')
+        self.universal_bind(self.fch_signals.start_rename, '[[error:Attention:]] Safegamefiles will be renamed, [[info:pls be patient]]')
+        self.universal_bind(self.fch_signals.cannot_use, '[[error:File "{str}"]] in use, waiting')
+        self.universal_bind(self.fch_signals.folder_not_found, '[[error:Folder "{str}"]] not found! Try to create it')
+        self.universal_bind(self.fch_signals.folder_created, '[[success:Folder "{str}"]] created')
+        self.universal_bind(self.fch_signals.broken_link, '[[error:Link "{str}"]] broken, recreate it!')
 
 
 
