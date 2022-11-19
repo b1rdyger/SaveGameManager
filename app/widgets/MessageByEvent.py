@@ -1,10 +1,13 @@
 import re
 
 from PyQt6.QtCore import QObject, pyqtSlot
+from datetime import datetime
 
 from app.SGMSignals.EngineSignals import EngineSignals
 from app.SGMSignals.FCHSignals import FCHSignals
+from app.SGMSignals.LTSignals import LTSignals
 from app.SGMSignals.MFSSignals import MFSSignals
+from app.utils.DateUtils import DateUtils
 
 
 class SignalMemory(QObject):
@@ -22,6 +25,8 @@ class SignalMemory(QObject):
                 return self.parse_str
             case ['']:
                 return self.parse
+            case ['PyQt_PyObject']:
+                return self.parse_datetime
             case _:
                 raise NotImplementedError('No pyqtSlot for signature ' + str(self.slot))
 
@@ -33,6 +38,9 @@ class SignalMemory(QObject):
     @pyqtSlot(str)
     def parse_str(self, q_str: str):
         self.message_box.write(self.message.replace('{str}', q_str))
+    @pyqtSlot(datetime)
+    def parse_datetime(self, q_datetime: str):
+        self.message_box.write(self.message.replace('{datetime}', DateUtils.get_formated_time(q_datetime)))
 
 
 class MessageByEvent(QObject):
@@ -45,13 +53,19 @@ class MessageByEvent(QObject):
         self.engine_signals = EngineSignals()
         self.mfs_signals = MFSSignals()
         self.fch_signals = FCHSignals()
+        self.lt_signals = LTSignals()
 
     def prepare(self):
         #engine_signals
         self.universal_bind(self.engine_signals.engine_started, '[[success:Engine started!]]')
         self.universal_bind(self.engine_signals.check_safegame_folder, '[[highlighted:Check Savefolder: "{str}"]]')
         self.universal_bind(self.engine_signals.folder_found, '[[success:Folder "{str}" found]]')
+        self.universal_bind(self.engine_signals.folder_found, '[[success:Folder "{str}" found]]')
 
+        #lt_singals
+        self.universal_bind(self.lt_signals.shutdown_initiated, '[[highlighted:Attention! SYSTEM will shutdown after {datetime} next backup]]')
+        self.universal_bind(self.lt_signals.shutdown_wait_for_backup, '[[error:Attention! SYSTEM will shutdown after next backup]]')
+        self.universal_bind(self.lt_signals.shutdown_abort, '[[success:Shutdown abort!]]')
 
         #mfs_signals
         self.universal_bind(self.mfs_signals.symlinkCreated, '[[success:Symlink created]]')
