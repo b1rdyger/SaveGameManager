@@ -16,4 +16,9 @@ class FCHSignals(SGMSignalObjects):
     folder_not_found = pyqtSignal(str)
     folder_created = pyqtSignal(str)
     broken_link = pyqtSignal(str)
+    backup_start = pyqtSignal()
+    backup_fails = pyqtSignal()
+    smart_backup_finished = pyqtSignal()
+
+
 

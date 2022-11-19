@@ -83,6 +83,10 @@ class MessageByEvent(QObject):
         self.universal_bind(self.fch_signals.folder_created, '[[success:Folder "{str}"]] created')
         self.universal_bind(self.fch_signals.broken_link, '[[error:Link "{str}"]] broken, recreate it!')
 
+        self.universal_bind(self.fch_signals.backup_start, '[[highlighted:Starte Smart backup]]')
+        self.universal_bind(self.fch_signals.backup_fails, '[[error:Smart backup fehlgeschlagen! Bitte manuelles Backup vornehmen!]]')
+        self.universal_bind(self.fch_signals.smart_backup_finished, '[[error:Smart backup fehlgeschlagen! Bitte manuelles Backup vornehmen!]]')
+
     def universal_bind(self, fn, msg):
         f, m, p = self.extract_emitter(fn)
         sm = SignalMemory(f, m, p, self.msg_box, msg)
