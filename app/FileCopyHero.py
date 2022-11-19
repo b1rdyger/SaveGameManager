@@ -120,7 +120,7 @@ class FileCopyHero:
                         while self.is_file_in_use(f'{self.save_from}{os.sep}{savegame_filename_only}'):
                             # self.console_log(f'[error: File "{savegame_filename_only}"] in use, waiting')
                             self.signals.cannot_use.emit(savegame_filename_only)
-                            time.sleep(0.25)
+                            time.sleep(0.1)
                         os.remove(f'{self.save_from}{os.sep}{savegame_filename_only}')
                         self.last_saved_or_restored_filename = f'{savegame_filename_only}'
                         self.signals.renamed.emit(self.last_saved_or_restored_filename) #TODO: fix me, "]" wird falsch interpretiert!!
@@ -141,15 +141,18 @@ class FileCopyHero:
     def backup_files(self, files: list[str]):
         for save_to in self.save_to_list:
             if not os.path.isdir(save_to.path):
-                try:
-                    os.mkdir(save_to.path)
-                except FileExistsError:
-                    self.signals.cannot_use.emit(save_to.path)
-                    continue
+                self.signals.folder_not_found.emit(save_to.path)
+                os.mkdir(save_to.path)
+                self.signals.folder_created.emit(save_to.path)
             for file in files:
                 if self.hidden_tag_file not in file:
+                    while self.is_file_in_use(f'{self.save_from}{os.sep}{file}'):
+                        self.signals.cannot_use.emit(file)
+                        time.sleep(0.1)
                     shutil.copy2(f'{self.save_from}{os.sep}{file}', f'{save_to.path}')
-                    time.sleep(0.1)
+                    while self.is_file_in_use(f'{self.save_from}{os.sep}{file}'):
+                        self.signals.cannot_use.emit(file)
+                        time.sleep(0.1)
                     os.remove(f'{self.save_from}{os.sep}{file}')
                     self.console_log(f'[highlighted:Smart backup {file}]')
 
@@ -162,25 +165,22 @@ class FileCopyHero:
             first_backup_path = first_backup_path.path
         if os.path.isdir(self.save_from):
             if not os.path.isdir(first_backup_path):
-                try:
-                    os.mkdir(first_backup_path)
-                except Exception as e:
-                    print(f'Tried to create {first_backup_path} Error:\n{e}')
+                self.signals.folder_not_found.emit(first_backup_path)
+                os.mkdir(first_backup_path)
+                self.signals.folder_created.emit(first_backup_path)
             files_in_save = os.listdir(self.save_from)
             if files_in_save not in [None, '']:
                 for file_name in files_in_save:
                     if file_name != self.hidden_tag_file:
-                        try:
-                            shutil.copy2(os.path.join(self.save_from, file_name), first_backup_path)
-                            time.sleep(0.3)
-                            os.remove(os.path.join(self.save_from, file_name))
-                        except Exception as e:
-                            print(f'Tried to move and delete {file_name} Error:\n{e}')
-
-            try:
+                        while self.is_file_in_use(f'{self.save_from}{os.sep}{file_name}'):
+                            self.signals.cannot_use.emit(file_name)
+                            time.sleep(0.1)
+                        shutil.copy2(os.path.join(self.save_from, file_name), first_backup_path)
+                        while self.is_file_in_use(f'{self.save_from}{os.sep}{file_name}'):
+                            self.signals.cannot_use.emit(file_name)
+                            time.sleep(0.1)
+                        os.remove(os.path.join(self.save_from, file_name))
                 os.rmdir(self.save_from)
-            except Exception as e:
-                print(f'Tried to remove {self.save_from} Error:\n{e}')
             return True
         return False
 

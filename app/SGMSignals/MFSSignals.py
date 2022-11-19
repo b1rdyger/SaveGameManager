@@ -12,3 +12,6 @@ class MFSSignals(SGMSignalObjects):
     symlinkCreated = pyqtSignal()
     symlinkRemoved = pyqtSignal()
     cleanedUp = pyqtSignal()
+    folder_not_empty = pyqtSignal(str)
+    folder_not_found = pyqtSignal(str)
+    folder_created = pyqtSignal(str)

@@ -13,3 +13,7 @@ class FCHSignals(SGMSignalObjects):
     start_observer = pyqtSignal(str)
     stop_observer = pyqtSignal()
     backup_successful = pyqtSignal()
+    folder_not_found = pyqtSignal(str)
+    folder_created = pyqtSignal(str)
+    broken_link = pyqtSignal(str)
+

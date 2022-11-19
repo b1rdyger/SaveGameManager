@@ -8,6 +8,7 @@ from app.MemoryFileSystemFacade import MemoryFileSystemFacade
 from app.ProcessChecker import ProcessChecker
 from app.SGMSignals.EngineSignals import EngineSignals
 from app.SGMSignals.FCHSignals import FCHSignals
+from app.SGMSignals.MFSSignals import MFSSignals
 
 
 class Engine(QObject):
@@ -26,13 +27,13 @@ class Engine(QObject):
 
         self.signals = EngineSignals()
         self.fch_signals = FCHSignals()
-
+        self.mfs_signals = MFSSignals()
         self.fch = FileCopyHero(self.hidden_tag_file,
                                 self.config.get('ignored_files'), self.config.get('compressed_save'))
         self.fch.set_from_path(self.config.get('common_save_dir'))
 
-        if not os.path.exists(os.path.join(self.config.get('common_save_dir'))):
-            if os.path.islink(os.path.join(self.config.get('common_save_dir'))):
+        if not os.path.isdir(self.config.get('common_save_dir')):#TODO: Hier können keine EMITS durchgeführt werden wenn z.B. der Ornder Save fehlt
+            if os.path.islink(self.config.get('common_save_dir')):
                 os.rmdir(self.config.get('common_save_dir'))
             os.mkdir(self.config.get('common_save_dir'))
 
