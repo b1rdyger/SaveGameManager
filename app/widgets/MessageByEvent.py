@@ -4,6 +4,7 @@ from PyQt6.QtCore import QObject, pyqtSlot
 
 from app.SGMSignals.EngineSignals import EngineSignals
 from app.SGMSignals.FCHSignals import FCHSignals
+from app.SGMSignals.LTSignals import LTSignals
 from app.SGMSignals.MFSSignals import MFSSignals
 
 
@@ -45,13 +46,17 @@ class MessageByEvent(QObject):
         self.engine_signals = EngineSignals()
         self.mfs_signals = MFSSignals()
         self.fch_signals = FCHSignals()
+        self.lt_signals = LTSignals()
 
     def prepare(self):
         #engine_signals
         self.universal_bind(self.engine_signals.engine_started, '[[success:Engine started!]]')
         self.universal_bind(self.engine_signals.check_safegame_folder, '[[highlighted:Check Savefolder: "{str}"]]')
         self.universal_bind(self.engine_signals.folder_found, '[[success:Folder "{str}" found]]')
+        self.universal_bind(self.engine_signals.folder_found, '[[success:Folder "{str}" found]]')
 
+        #lt_singals
+        self.universal_bind(self.lt_signals.shutdown_initiated, '[[error:Attention! SYSTEM will shutdown after next backup]]')
 
         #mfs_signals
         self.universal_bind(self.mfs_signals.symlinkCreated, '[[success:Symlink created]]')

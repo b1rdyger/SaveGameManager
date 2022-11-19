@@ -9,6 +9,7 @@ from app.ProcessChecker import ProcessChecker
 from app.SGMSignals.EngineSignals import EngineSignals
 from app.SGMSignals.FCHSignals import FCHSignals
 from app.SGMSignals.MFSSignals import MFSSignals
+from app.ShutdownManager import ShutdownManager
 
 
 class Engine(QObject):
@@ -29,6 +30,8 @@ class Engine(QObject):
         self.signals = EngineSignals()
         self.fch_signals = FCHSignals()
         self.mfs_signals = MFSSignals()
+        self.shutdown_manager = ShutdownManager()
+
         self.fch = FileCopyHero(self.hidden_tag_file,
                                 self.config.get('ignored_files'), self.config.get('compressed_save'))
         self.fch.set_from_path(self.config.get('common_save_dir'))
@@ -41,6 +44,7 @@ class Engine(QObject):
         self.pc = ProcessChecker(self.config.get('process_name'))
 
         self.fch_signals.backup_successful.connect(self.backup_saved)
+        self.signals.want_shutdown.connect(self.set_want_shutdown)
 
     def set_write_callback(self, msg_box):
         self.fch.set_console_write_callback(msg_box.write)
@@ -61,6 +65,9 @@ class Engine(QObject):
     def backup_saved(self):
         if self.want_shutdown:
             self.signals.shutdown_allowed.emit()
+    @pyqtSlot(bool)
+    def set_want_shutdown(self, var):
+        self.want_shutdown = var
 
     # engine thread
     @pyqtSlot()
