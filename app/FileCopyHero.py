@@ -139,6 +139,7 @@ class FileCopyHero:
                 logging.exception(e)
 
     def backup_files(self, files: list[str]):
+        print('test')
         for save_to in self.save_to_list:
             if not os.path.isdir(save_to.path):
                 self.signals.folder_not_found.emit(save_to.path)
@@ -154,7 +155,7 @@ class FileCopyHero:
                         self.signals.cannot_use.emit(file)
                         time.sleep(0.1)
                     os.remove(f'{self.save_from}{os.sep}{file}')
-                    self.console_log(f'[highlighted:Smart backup {file}]')
+                    self.signals.backuped_up_file.emit(file)
 
 
     def backup_for_symlink(self) -> bool:

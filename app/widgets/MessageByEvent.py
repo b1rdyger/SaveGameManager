@@ -85,6 +85,7 @@ class MessageByEvent(QObject):
 
         self.universal_bind(self.fch_signals.backup_start, '[[highlighted:Starte Smart backup]]')
         self.universal_bind(self.fch_signals.backup_fails, '[[error:Smart backup fehlgeschlagen! Bitte manuelles Backup vornehmen!]]')
+        self.universal_bind(self.fch_signals.backuped_up_file, '[[success:File "{str}" backed up]]')
         self.universal_bind(self.fch_signals.smart_backup_finished, '[[error:Smart backup fehlgeschlagen! Bitte manuelles Backup vornehmen!]]')
 
     def universal_bind(self, fn, msg):

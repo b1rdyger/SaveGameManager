@@ -18,6 +18,7 @@ class FCHSignals(SGMSignalObjects):
     broken_link = pyqtSignal(str)
     backup_start = pyqtSignal()
     backup_fails = pyqtSignal()
+    backuped_up_file = pyqtSignal(str)
     smart_backup_finished = pyqtSignal()
 
 
