@@ -1,9 +1,8 @@
 import datetime
 import os
 
-from PyQt6 import uic
+from PyQt6 import uic, QtCore, QtGui
 from PyQt6.QtWidgets import QWidget
-from PyQt6.uic.properties import QtCore, QtGui
 
 from app.SGMSignals.LTSignals import LTSignals
 from app.uiInterfaces.LogoffTimerUi import LogoffTimerUi
@@ -26,7 +25,7 @@ class LogoffTimerQt(QWidget):
         self.signals = LTSignals()
         QtCore.QDir.addSearchPath('icons', self.root_dir + os.sep + 'assets')
         logo = QtGui.QIcon('icons:logo/disk1-256.png')
-        self.setWindowIcon(logo)
+        self.ui.setWindowIcon(logo)
 
     def __setup(self):
         self.ui.btn_set_timer.clicked.connect(self.logoff_set_timer)
@@ -34,6 +33,7 @@ class LogoffTimerQt(QWidget):
         self.ui.btn_quit_timer.clicked.connect(self.logoff_quit_timer)
         self.ui.logoff_dial.valueChanged.connect(self.dial_value_changed)
         self.dial_value_changed(0)
+
 
     def get_minutes(self, value=None):
         if value is None:
