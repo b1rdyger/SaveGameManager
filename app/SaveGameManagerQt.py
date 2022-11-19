@@ -12,10 +12,12 @@ from PyQt6.QtWidgets import QTextEdit
 from app.Engine import Engine
 from app.LogoffTimerQt import LogoffTimerQt
 from app.SGMSignals.EngineSignals import EngineSignals
+from app.SGMSignals.LTSignals import LTSignals
 from app.SGMSignals.MFSSignals import MFSSignals
 from app.SGMSignals.PCSignals import PCSignals
 from app.SGMSignals.SGMSignals import SGMSignals
 from app.uiInterfaces.SaveGameManagerUi import SaveGameManagerUi
+from app.utils.DateUtils import DateUtils
 from app.widgets.MessageByEvent import MessageByEvent
 
 
@@ -81,6 +83,8 @@ class MyCustomClass(object):
             self.ensureCursorVisible()
 
 
+
+
 class SaveGameManagerQt(SaveGameManagerUi):
     last_running_state = None
 
@@ -88,45 +92,51 @@ class SaveGameManagerQt(SaveGameManagerUi):
         super().__init__()
         self.root_dir = root_dir
         self.signals = SGMSignals()
+        self.lt_signals = LTSignals()
+
         # init Engine Thread
         self.engine = Engine(self.root_dir)
         self.engine_thread = QThread()
         self.engine.moveToThread(self.engine_thread)
         self.engine_thread.start()
-
+        self.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.config = self.engine.config
         QtCore.QDir.addSearchPath('icons', self.root_dir + os.sep + 'assets')
         icon = QtGui.QPixmap('icons:arrow_right.png')
         logo = QtGui.QIcon('icons:logo/disk1-256.png')
+
 
         # noinspection PyTypeChecker
         sys.modules["MyCustomClass"] = MyCustomClass
         uic.loadUi(self.root_dir + os.sep + 'assets' + os.sep + 'main-window.ui', self)  # Load the .ui file
         self.setWindowIcon(logo)
 
+
         self.msg_box.prepare(self.root_dir)
-        self.logoff_timer_window = LogoffTimerQt(self.root_dir, self)
+        self.logoff_timer_window = LogoffTimerQt(self.root_dir)
 
         # self.text_log = self.msg_box()
         self.game_info.setText('')
         self.arrow_up.setPixmap(icon)
         self.arrow_down.setPixmap(icon)
         self.arrow_down.hide()
-        self.show()  # Show the GUI
         self._generate_buttons()
 
         self.mfs_signals = MFSSignals()
         self.pc_signals = PCSignals()
         self.engine_signals = EngineSignals()
         self.bind_sgm_emits()
+        self.bind_lt_emits()
         self.bind_rest_emits()
+
 
         self.mbe = MessageByEvent(self.msg_box)
         self.mbe.prepare()
 
         self.engine.set_write_callback(self.msg_box)
-
         self.start_engine()
+        self.show()
+
 
     def _generate_buttons(self):
         # Buttons
@@ -138,6 +148,10 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.signals.run_engine.connect(self.engine.run)
         self.signals.stop_engine.connect(self.engine.stop)
 
+    def bind_lt_emits(self):
+        self.lt_signals.timer_set.connect(self.timer_set)
+        self.lt_signals.timer_clear.connect(self.timer_clear)
+
     def bind_rest_emits(self):
         self.mfs_signals.driveCreated.connect(self.ram_disk_mounted)
         self.mfs_signals.symlinkCreated.connect(lambda: self.arrow_to_ramdrive(True))
@@ -147,6 +161,16 @@ class SaveGameManagerQt(SaveGameManagerUi):
 
     def open_logoff_timer_window(self):
         self.logoff_timer_window.show()
+
+    @pyqtSlot(datetime)
+    def timer_set(self, endtime):
+        self.logoff_label.setText(f'Logoff: {DateUtils.get_formated_time(endtime)}')
+        self.logoff_label.setStyleSheet('QLabel { background-color : lime; color : black; }')
+
+    @pyqtSlot()
+    def timer_clear(self):
+        self.logoff_label.setText('Logoff: Off')
+        self.logoff_label.setStyleSheet('QLabel { background-color : red; color : black; }')
 
     @pyqtSlot()
     def arrow_to_ramdrive(self, at_ramdrive):
