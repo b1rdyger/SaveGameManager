@@ -16,10 +16,10 @@ class ShutdownManager(QObject):
     def __init__(self):
         super().__init__()
         self.signals = LTSignals()
-        self.engine_singals = EngineSignals()
+        self.engine_signals = EngineSignals()
         self.signals.timer_set.connect(self.timer_set_emitted)
         self.signals.timer_clear.connect(self.timer_clear_emitted)
-        self.engine_singals.want_shutdown.connect(self.engine_want_logoff)
+        self.engine_signals.want_shutdown.connect(self.engine_want_logoff)
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.check_shutdown)
         self.timer.setInterval(10000)
@@ -30,14 +30,13 @@ class ShutdownManager(QObject):
     def stop_timer(self):
         self.timer.stop()
         with contextlib.suppress(Exception):
-            os.system('shutdown -a')
+            os.system('shutdown /a')
 
     def check_shutdown(self):
-        print('check_shutdown')
         if datetime.now() >= self.logoff_time:
             self.want_logoff = True
-            self.engine_singals.shutdown_allowed.emit()
-            self.signals.shutdown_initiated.emit()
+            self.engine_signals.shutdown_allowed.emit()
+            self.signals.shutdown_wait_for_backup.emit()
         if self.want_logoff:
             os.system('shutdown /s /t 60')
             self.want_logoff = False
@@ -48,10 +47,13 @@ class ShutdownManager(QObject):
 
     @pyqtSlot(datetime)
     def timer_set_emitted(self, dt):
+        self.signals.shutdown_initiated.emit(dt)
         self.logoff_time = dt
         self.start_timer()
 
     @pyqtSlot()
     def timer_clear_emitted(self):
+        self.signals.shutdown_abort.emit()
         self.logoff_time = None
+        self.want_logoff = False
         self.stop_timer()

@@ -28,9 +28,6 @@ class MyCustomClass(object):
 
         def __int__(self, *args):
             QTextEdit.__init__(self, *args)
-            self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.NoContextMenu)
-            self.setReadOnly(True)
-            self.setUndoRedoEnabled(False)
 
         def prepare(self, script_dir):
             self.script_dir = script_dir
@@ -46,9 +43,11 @@ class MyCustomClass(object):
             for tag, color in all_tags.items():
                 self.tag[tag] = QTextCharFormat()
                 self.tag[tag].setForeground(QBrush(QColor(color)))
-
             self.tag['default'] = QTextCharFormat()
             self.tag['default'].setForeground(QBrush(QColor("white")))
+            self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.NoContextMenu)
+            self.setReadOnly(True)
+            self.setUndoRedoEnabled(False)
 
         def write(self, msg):
             now = datetime.now().strftime("%H:%M:%S")
