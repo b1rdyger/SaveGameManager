@@ -23,7 +23,7 @@ class Engine(QObject):
         super().__init__()
 
         self.root_dir = root_dir
-        self.config = ConfigController(root_dir, self)
+        self.config = ConfigController(root_dir)
         self.signals = EngineSignals()
         self.fch_signals = FCHSignals()
         self.mfs_signals = MFSSignals()
@@ -62,6 +62,7 @@ class Engine(QObject):
     def backup_saved(self):
         if self.want_shutdown:
             self.signals.shutdown_allowed.emit()
+
     @pyqtSlot(bool)
     def set_want_shutdown(self, var):
         self.want_shutdown = var

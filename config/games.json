@@ -1,5 +1,6 @@
 {
   "_comment": "NO EDITING REQUIRED - SET EVERYTHING IN THE USER INTERFACE!",
+  "last_profile": "Dyson Sphere Program",
   "profiles": {
     "Dyson Sphere Program": {
       "process_name": "DSPGame.exe",

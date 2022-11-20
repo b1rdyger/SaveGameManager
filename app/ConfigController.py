@@ -8,6 +8,7 @@ from app.CheckRegedit import CheckRegedit, GameInfo
 
 class ConfigController:
     config: json
+    profile = None
 
     def __init__(self, root_dir):
         self.config_file = f'{root_dir}config{os.sep}games.json'
@@ -19,8 +20,14 @@ class ConfigController:
             self.__fix_directories(profile)
             self.__fix_run_cmd(profile, check_regedit)
 
-    def __getitem__(self, profile, item):
-        return self.config.get(profile).get(item)
+        self.set_profile(self.config.get('last_profile'))
+
+    def set_profile(self, profile):
+        if self.config.get('profiles').get(profile):
+            self.profile = profile
+
+    def __getitem__(self, item):
+        return self.config.get('profiles').get(self.profile).get(item)
 
     def __load_config(self, file) -> bool:
         if bool(os.path.exists(file)):

@@ -19,7 +19,6 @@ class ProfileSelectorQt(QWidget):
         self.ui.toolButton2.clicked.connect(self.add_backup_folder)
         self.ui.deleteButton.clicked.connect(self.delete_backup_folder)
 
-
     def __setup(self):
         self.model = QStandardItemModel()
         self.ui.backupdirsEdit.setModel(self.model)
@@ -27,9 +26,10 @@ class ProfileSelectorQt(QWidget):
         self.model.appendRow(item)
 
     def select_save_folder(self):
-        savegamefolder = self.pick_new('Select Savegame Folder')
-        self.ui.savedirEdit.setText(savegamefolder)
+        savegame_folder = self.select_folder('Select Savegame Folder')
+        self.ui.savedirEdit.setText(savegame_folder)
         return True
+
     def delete_backup_folder(self):
         current_select = self.ui.backupdirsEdit.currentIndex()
         if not current_select.data():
@@ -37,10 +37,11 @@ class ProfileSelectorQt(QWidget):
         self.model.removeRow(current_select.row())
 
     def add_backup_folder(self):
-        backupfolder = self.pick_new('Add Backup Folder')
-        item = QStandardItem(backupfolder)
+        backup_folder = self.select_folder('Add Backup Folder')
+        item = QStandardItem(backup_folder)
         self.model.appendRow(item)
         return True
 
-    def pick_new(self, title="Select Folder"):
+    # noinspection PyMethodMayBeStatic
+    def select_folder(self, title="Select Folder"):
         return QFileDialog.getExistingDirectory(None, title)
