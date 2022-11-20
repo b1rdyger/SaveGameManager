@@ -156,6 +156,9 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.btn_exit.clicked.connect(self.close)
         self.btn_logoff_timer.clicked.connect(self.open_logoff_timer_window)
 
+    def __setup_menu(self):
+        self.action_config.clicked.connect(self.profile_selector_window.ui.show())
+
     def bind_sgm_emits(self):
         self.signals.run_engine.connect(self.engine.run)
         self.signals.stop_engine.connect(self.engine.stop)
