@@ -131,3 +131,5 @@ dmypy.json
 # project
 .idea/
 data/
+config/games.json
+tests/
