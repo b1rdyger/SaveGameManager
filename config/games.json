@@ -1,17 +1,20 @@
 {
   "_comment": "NO EDITING REQUIRED - SET EVERYTHING IN THE USER INTERFACE!",
-  "title": "Dyson Sphere Program",
-  "process_name": "DSPGame.exe",
-  "run_cmd": "id:1366540",
-  "ignored_files": [
-    "_autosave_tmp\\.dsv",
-    "\\[Recovery\\]-.*"
-  ],
-  "common_save_dir": "%USERPROFILE%\\Documents\\Dyson Sphere Program\\Save",
-  "backup_save_dirs": [
-    {
-      "location": "%USERPROFILE%\\Documents\\Dyson Sphere Program\\Save_Backup",
-      "copy_back": true
+  "profiles": {
+    "Dyson Sphere Program": {
+      "process_name": "DSPGame.exe",
+      "run_cmd": "id:1366540",
+      "ignored_files": [
+        "_autosave_tmp\\.dsv",
+        "\\[Recovery\\]-.*"
+      ],
+      "common_save_dir": "%USERPROFILE%\\Documents\\Dyson Sphere Program\\Save",
+      "backup_save_dirs": [
+        {
+          "location": "%USERPROFILE%\\Documents\\Dyson Sphere Program\\Save_Backup",
+          "copy_back": true
+        }
+      ]
     }
-  ]
+  }
 }
