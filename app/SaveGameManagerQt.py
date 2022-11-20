@@ -213,7 +213,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.signals.run_engine.emit()
 
     def start_dsp(self):
-        subprocess.Popen(f"{self.config['steam_path']} -applaunch 1366540")
+        subprocess.Popen(f"{self.config['run_cmd']}")
 
     @staticmethod
     def is_cleaned_up():

@@ -1,5 +1,8 @@
 import json
 import os
+import re
+
+from app.CheckRegedit import CheckRegedit, GameInfo
 
 
 class ConfigController:
@@ -10,6 +13,13 @@ class ConfigController:
         self.engine = engine
         if self.__check_configfile(self.config_file):
             self.__load_config()
+        check_regedit = CheckRegedit()
+        run_cmd = self.config.get('run_cmd')
+        if run_id_match := re.search('^id:([0-9]+)$', run_cmd):
+            run_id = run_id_match[1]
+            if run_id in check_regedit.available_games:
+                game_info: GameInfo = check_regedit.available_games[run_id]
+                self.config['run_cmd'] = game_info.run_cmd
 
     def __getitem__(self, item):
         return self.config.get(item)

@@ -2,7 +2,7 @@
   "_comment": "NO EDITING REQUIRED - SET EVERYTHING IN THE USER INTERFACE!",
   "title": "Dyson Sphere Program",
   "process_name": "DSPGame.exe",
-  "steam_path": "C:\\Program Files (x86)\\Steam\\steam.exe",
+  "run_cmd": "id:1366540",
   "ignored_files": [
     "_autosave_tmp\\.dsv",
     "\\[Recovery\\]-.*"
