@@ -23,22 +23,22 @@ class Engine(QObject):
         super().__init__()
 
         self.root_dir = root_dir
-        self.configcontroller = ConfigController(root_dir, self)
+        self.config = ConfigController(root_dir, self)
         self.signals = EngineSignals()
         self.fch_signals = FCHSignals()
         self.mfs_signals = MFSSignals()
         self.shutdown_manager = ShutdownManager()
 
         self.fch = FileCopyHero(self.hidden_tag_file,
-                                self.configcontroller.config.get('ignored_files'), self.configcontroller.config.get('compressed_save'))
-        self.fch.set_from_path(self.configcontroller.config.get('common_save_dir'))
+                                self.config['ignored_files'], self.config['compressed_save'])
+        self.fch.set_from_path(self.config['common_save_dir'])
 
-        backup_folders = self.configcontroller.config.get('backup_save_dirs')
+        backup_folders = self.config['backup_save_dirs']
 
         for one_backup_folder in backup_folders:
             self.fch.add_save_block(SaveToBlock(one_backup_folder['location']))
 
-        self.pc = ProcessChecker(self.configcontroller.config.get('process_name'))
+        self.pc = ProcessChecker(self.config['process_name'])
 
         self.fch_signals.backup_successful.connect(self.backup_saved)
         self.signals.want_shutdown.connect(self.set_want_shutdown)
@@ -47,7 +47,7 @@ class Engine(QObject):
         self.fch.set_console_write_callback(msg_box.write)
 
     def check_save_path(self):
-        savegame_path = self.configcontroller.config.get('common_save_dir')
+        savegame_path = self.config['common_save_dir']
         self.signals.check_safegame_folder.emit(savegame_path)
 
         if not os.path.isdir(savegame_path):
@@ -71,7 +71,7 @@ class Engine(QObject):
     def run(self):
         self.signals.engine_started.emit()
         self.check_save_path()
-        self.mfs = MemoryFileSystemFacade(self.configcontroller.config.get('common_save_dir'),
+        self.mfs = MemoryFileSystemFacade(self.config['common_save_dir'],
                                           self.hidden_tag_file).get_concrete()
         ram_drive_letter = self.mfs.create_or_just_get()
         if ram_drive_letter is not None and self.fch.backup_for_symlink() and self.mfs.create_symlink():
@@ -85,7 +85,7 @@ class Engine(QObject):
             self.mfs.stop()
 
     def load_profile(self):
-        self.profiles = self.configcontroller.config.get('profiles')
+        self.profiles = self.config['profiles']
 
 
 

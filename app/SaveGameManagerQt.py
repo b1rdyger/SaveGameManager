@@ -124,7 +124,6 @@ class SaveGameManagerQt(SaveGameManagerUi):
         uic.loadUi(self.root_dir + os.sep + 'assets' + os.sep + 'main-window.ui', self)  # Load the .ui file
         self.setWindowIcon(logo)
 
-
         self.msg_box.prepare(self.root_dir)
         self.logoff_timer_window = LogoffTimerQt(self.root_dir)
 
@@ -142,14 +141,12 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.bind_lt_emits()
         self.bind_rest_emits()
 
-
         self.mbe = MessageByEvent(self.msg_box)
         self.mbe.prepare()
 
         self.engine.set_write_callback(self.msg_box)
         self.start_engine()
         self.show()
-
 
     def _generate_buttons(self):
         # Buttons
@@ -176,8 +173,8 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.logoff_timer_window.show()
 
     @pyqtSlot(datetime)
-    def timer_set(self, endtime):
-        self.logoff_label.setText(f'Logoff: {DateUtils.get_formated_time(endtime)}')
+    def timer_set(self, end_time):
+        self.logoff_label.setText(f'Logoff: {DateUtils.get_formated_time(end_time)}')
         self.logoff_label.setStyleSheet('QLabel { background-color : lime; color : black; }')
 
     @pyqtSlot()
@@ -216,7 +213,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.signals.run_engine.emit()
 
     def start_dsp(self):
-        subprocess.Popen(rf"{self.config.get('steam_path')} -applaunch 1366540")
+        subprocess.Popen(f"{self.config['steam_path']} -applaunch 1366540")
 
     @staticmethod
     def is_cleaned_up():
