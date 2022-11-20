@@ -11,6 +11,7 @@ from PyQt6.QtWidgets import QTextEdit
 
 from app.Engine import Engine
 from app.LogoffTimerQt import LogoffTimerQt
+from app.ProfileSelectorQt import ProfileSelectorQt
 from app.SGMSignals.EngineSignals import EngineSignals
 from app.SGMSignals.LTSignals import LTSignals
 from app.SGMSignals.MFSSignals import MFSSignals
@@ -126,6 +127,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
 
         self.msg_box.prepare(self.root_dir)
         self.logoff_timer_window = LogoffTimerQt(self.root_dir)
+        self.profile_selector_window = ProfileSelectorQt(self.root_dir)
 
         # self.text_log = self.msg_box()
         self.game_info.setText('')

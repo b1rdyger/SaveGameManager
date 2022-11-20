@@ -2,6 +2,7 @@ import json
 import os
 import re
 
+
 from app.CheckRegedit import CheckRegedit, GameInfo
 
 
