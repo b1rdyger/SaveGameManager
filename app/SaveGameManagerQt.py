@@ -53,8 +53,10 @@ class MyCustomClass(object):
             self.setUndoRedoEnabled(False)
 
         def write(self, msg, merge_lines=True):
+            self.moveCursor(QTextCursor.MoveOperation.End)
             now = datetime.now().strftime("%H:%M:%S")
             bla = self.textCursor()
+
             regex_search_in_string = '\\[\[([a-zA-Z0-9]+):(.*?)]]'
             if merge_lines and msg is self.last_message:
                 self.last_message_counter += 1
@@ -69,10 +71,11 @@ class MyCustomClass(object):
                 self.last_message = msg
                 self.last_message_counter = 0
 
-            self.last_cursor_position = self.textCursor().position()
-
+            self.moveCursor(QTextCursor.MoveOperation.End)
             bla.setCharFormat(self.tag['timestamp'])
             bla.insertText(f'[{str(now)}] ')
+
+
 
             while msg != "":
                 if matched := re.search(regex_search_in_string, msg):
@@ -94,10 +97,10 @@ class MyCustomClass(object):
                     bla.setCharFormat(self.tag['default'])
                     bla.insertText(f'{str(msg)}')
                     break
+
             bla.insertHtml('<br />')
-
             self.ensureCursorVisible()
-
+            self.moveCursor(QTextCursor.MoveOperation.End)
 
 class SaveGameManagerQt(SaveGameManagerUi):
     last_running_state = None
