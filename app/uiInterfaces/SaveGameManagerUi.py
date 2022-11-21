@@ -1,12 +1,13 @@
-from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QMainWindow, QLabel, QPushButton, QMenuBar
 from PyQt6.QtWidgets import QMainWindow, QLabel
-from app.uiInterfaces.QClazzes import QPushButtonClazz
+from PyQt6.QtWidgets import QMenuBar
+
+from app.uiInterfaces.QClazzes import QPushButtonClazz, QActionClazz
 
 
 class SaveGameManagerUi(QMainWindow):
-    action_config: QAction
-    action_open_savegame_folder: QAction
+    action_config: QActionClazz
+    action_open_savegame_folder: QActionClazz
+    action_exit: QActionClazz
     menubar: QMenuBar
     logoff_label: QLabel
     game_info: QLabel

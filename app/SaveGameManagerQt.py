@@ -140,7 +140,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
 
         self.msg_box.prepare(self.root_dir)
         self.logoff_timer_window = LogoffTimerQt(self.root_dir)
-        self.open_profile_selector = ProfileSelectorQt
+        self.open_profile_selector = ProfileSelectorQt(self.root_dir)
 
         # self.text_log = self.msg_box()
         self.game_info.setText('')
@@ -168,10 +168,9 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.btn_start_game.clicked.connect(self.start_dsp)
         self.btn_exit.clicked.connect(self.close)
         self.btn_logoff_timer.clicked.connect(self.open_logoff_timer_window)
-
-    def __setup_menu(self):
-        self.action_config.ActionEvent.clicked.connect(self.open_profile_selector_window)
-
+        self.action_config.triggered.connect(self.open_profile_selector_window)
+        self.action_open_savegame_folder.triggered.connect(lambda: os.startfile(self.config['common_save_dir']))
+        self.action_exit.triggered.connect(self.close)
     def bind_sgm_emits(self):
         self.signals.run_engine.connect(self.engine.run)
         self.signals.stop_engine.connect(self.engine.stop)
@@ -188,7 +187,6 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.mfs_signals.cleanedUp.connect(self.is_cleaned_up)
 
     def open_profile_selector_window(self):
-        print('clicked')
         self.open_profile_selector.ui.show()
 
     def open_logoff_timer_window(self):
