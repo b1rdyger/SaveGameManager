@@ -46,6 +46,7 @@ class LogoffTimerQt(QWidget):
         self.ui.logoff_ic.display(minutes_in_future)
         self.want_shutdown_after = datetime.datetime.now()
         self.want_shutdown_after = self.want_shutdown_after + datetime.timedelta(seconds=real_minutes_in_future * 60)
+        self.ui.logoff_time_status.setText(f'Possible logofftime: {DateUtils.get_formated_time(self.want_shutdown_after)} ')
 
     def show(self):
         self.ui.show()
