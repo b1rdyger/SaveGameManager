@@ -4,10 +4,10 @@ import subprocess
 import sys
 from datetime import datetime
 
-from PyQt6 import uic, QtCore, QtGui
-from PyQt6.QtCore import QThread, pyqtSlot
+from PyQt6 import uic, QtGui
+from PyQt6.QtCore import QThread, pyqtSlot, Qt, QDir
 from PyQt6.QtGui import QTextCharFormat, QBrush, QColor, QTextCursor
-from PyQt6.QtWidgets import QTextEdit
+from PyQt6.QtWidgets import QTextEdit, QApplication
 
 from app.Engine import Engine
 from app.LogoffTimerQt import LogoffTimerQt
@@ -32,6 +32,16 @@ class MyCustomClass(object):
         def __int__(self, *args):
             QTextEdit.__init__(self, *args)
 
+        def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:# Catch all MouseButtonEvents
+            modifiers = QApplication.keyboardModifiers()
+            if modifiers == modifiers.KeypadModifier.NoModifier:
+                self.moveCursor(QTextCursor.MoveOperation.End)
+        def mouseReleaseEvent(self, event: QtGui.QMouseEvent) -> None:# Catch all MouseButtonEvents
+            modifiers = QApplication.keyboardModifiers()
+            if modifiers == modifiers.KeypadModifier.NoModifier:
+                self.moveCursor(QTextCursor.MoveOperation.End)
+
+
         def prepare(self, script_dir):
             self.script_dir = script_dir
             regex_search_in_css = '--([a-zA-Z0-9_-]+)\\s*:\\s*(#[a-zA-Z0-9]{3,6});'
@@ -48,12 +58,12 @@ class MyCustomClass(object):
                 self.tag[tag].setForeground(QBrush(QColor(color)))
             self.tag['default'] = QTextCharFormat()
             self.tag['default'].setForeground(QBrush(QColor("white")))
-            self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.NoContextMenu)
+            self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
             self.setReadOnly(True)
             self.setUndoRedoEnabled(False)
 
+
         def write(self, msg, merge_lines=True):
-            self.moveCursor(QTextCursor.MoveOperation.End)
             now = datetime.now().strftime("%H:%M:%S")
             bla = self.textCursor()
 
@@ -74,8 +84,6 @@ class MyCustomClass(object):
             self.moveCursor(QTextCursor.MoveOperation.End)
             bla.setCharFormat(self.tag['timestamp'])
             bla.insertText(f'[{str(now)}] ')
-
-
 
             while msg != "":
                 if matched := re.search(regex_search_in_string, msg):
@@ -100,7 +108,6 @@ class MyCustomClass(object):
 
             bla.insertHtml('<br />')
             self.ensureCursorVisible()
-            self.moveCursor(QTextCursor.MoveOperation.End)
 
 class SaveGameManagerQt(SaveGameManagerUi):
     last_running_state = None
@@ -116,9 +123,9 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.engine_thread = QThread()
         self.engine.moveToThread(self.engine_thread)
         self.engine_thread.start()
-        self.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.config = self.engine.config
-        QtCore.QDir.addSearchPath('icons', self.root_dir + os.sep + 'assets')
+        QDir.addSearchPath('icons', self.root_dir + os.sep + 'assets')
         icon = QtGui.QPixmap('icons:arrow_right.png')
         logo = QtGui.QIcon('icons:logo/disk1-256.png')
 
@@ -150,6 +157,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.engine.set_write_callback(self.msg_box)
         self.start_engine()
         self.show()
+
 
     def _generate_buttons(self):
         # Buttons
