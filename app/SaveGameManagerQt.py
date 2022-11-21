@@ -4,10 +4,10 @@ import subprocess
 import sys
 from datetime import datetime
 
-from PyQt6 import uic, QtCore, QtGui
-from PyQt6.QtCore import QThread, pyqtSlot
+from PyQt6 import uic, QtGui
+from PyQt6.QtCore import QThread, pyqtSlot, Qt, QDir
 from PyQt6.QtGui import QTextCharFormat, QBrush, QColor, QTextCursor
-from PyQt6.QtWidgets import QTextEdit
+from PyQt6.QtWidgets import QTextEdit, QApplication
 
 from app.Engine import Engine
 from app.LogoffTimerQt import LogoffTimerQt
@@ -33,6 +33,16 @@ class MyCustomClass(object):
         def __int__(self, *args):
             QTextEdit.__init__(self, *args)
 
+        def mousePressEvent(self, event: QtGui.QMouseEvent) -> None:# Catch all MouseButtonEvents
+            modifiers = QApplication.keyboardModifiers()
+            if modifiers == modifiers.KeypadModifier.NoModifier:
+                self.moveCursor(QTextCursor.MoveOperation.End)
+        def mouseReleaseEvent(self, event: QtGui.QMouseEvent) -> None:# Catch all MouseButtonEvents
+            modifiers = QApplication.keyboardModifiers()
+            if modifiers == modifiers.KeypadModifier.NoModifier:
+                self.moveCursor(QTextCursor.MoveOperation.End)
+
+
         def prepare(self, script_dir):
             self.script_dir = script_dir
             regex_search_in_css = '--([a-zA-Z0-9_-]+)\\s*:\\s*(#[a-zA-Z0-9]{3,6});'
@@ -49,12 +59,11 @@ class MyCustomClass(object):
                 self.tag[tag].setForeground(QBrush(QColor(color)))
             self.tag['default'] = QTextCharFormat()
             self.tag['default'].setForeground(QBrush(QColor("white")))
-            self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.NoContextMenu)
+            self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
             self.setReadOnly(True)
             self.setUndoRedoEnabled(False)
 
         def write(self, msg, merge_lines=True):
-            self.moveCursor(QTextCursor.MoveOperation.End)
             now = datetime.now().strftime("%H:%M:%S")
             bla = self.textCursor()
 
@@ -72,11 +81,11 @@ class MyCustomClass(object):
                 self.last_message = msg
                 self.last_message_counter = 0
 
+            self.last_cursor_position = self.textCursor().position()
             self.moveCursor(QTextCursor.MoveOperation.End)
+
             bla.setCharFormat(self.tag['timestamp'])
             bla.insertText(f'[{str(now)}] ')
-
-
 
             while msg != "":
                 if matched := re.search(regex_search_in_string, msg):
@@ -100,8 +109,9 @@ class MyCustomClass(object):
                     break
 
             bla.insertHtml('<br />')
+
             self.ensureCursorVisible()
-            self.moveCursor(QTextCursor.MoveOperation.End)
+
 
 class SaveGameManagerQt(SaveGameManagerUi):
     last_running_state = None
@@ -117,9 +127,9 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.engine_thread = QThread()
         self.engine.moveToThread(self.engine_thread)
         self.engine_thread.start()
-        self.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.config = self.engine.config
-        QtCore.QDir.addSearchPath('icons', self.root_dir + os.sep + 'assets')
+        QDir.addSearchPath('icons', self.root_dir + os.sep + 'assets')
         icon = QtGui.QPixmap('icons:arrow_right.png')
         logo = QtGui.QIcon('icons:logo/disk1-256.png')
 
@@ -130,7 +140,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
 
         self.msg_box.prepare(self.root_dir)
         self.logoff_timer_window = LogoffTimerQt(self.root_dir)
-        self.profile_selector_window = ProfileSelectorQt(self.root_dir)
+        self.open_profile_selector = ProfileSelectorQt
 
         # self.text_log = self.msg_box()
         self.game_info.setText('')
@@ -160,7 +170,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.btn_logoff_timer.clicked.connect(self.open_logoff_timer_window)
 
     def __setup_menu(self):
-        self.action_config.clicked.connect(self.profile_selector_window.ui.show())
+        self.action_config.ActionEvent.clicked.connect(self.open_profile_selector_window)
 
     def bind_sgm_emits(self):
         self.signals.run_engine.connect(self.engine.run)
@@ -176,6 +186,10 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.mfs_signals.symlinkRemoved.connect(lambda: self.arrow_to_ramdrive(False))
         self.pc_signals.running.connect(self.change_game_info_panel)
         self.mfs_signals.cleanedUp.connect(self.is_cleaned_up)
+
+    def open_profile_selector_window(self):
+        print('clicked')
+        self.open_profile_selector.ui.show()
 
     def open_logoff_timer_window(self):
         self.logoff_timer_window.show()
