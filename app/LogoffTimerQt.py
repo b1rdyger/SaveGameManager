@@ -31,6 +31,7 @@ class LogoffTimerQt(QWidget):
         self.ui.btn_set_timer.clicked.connect(self.logoff_set_timer)
         self.ui.btn_cancel_timer.clicked.connect(self.logoff_cancel_timer)
         self.ui.btn_quit_timer.clicked.connect(self.logoff_quit_timer)
+        self.ui.btn_test_function.clicked.connect(self.test_button)
         self.ui.logoff_dial.valueChanged.connect(self.dial_value_changed)
         self.dial_value_changed(0)
 
@@ -47,6 +48,9 @@ class LogoffTimerQt(QWidget):
         self.want_shutdown_after = self.want_shutdown_after + datetime.timedelta(seconds=real_minutes_in_future * 60)
         self.ui.logoff_time_status.setText(
             f'Possible logofftime: {DateUtils.get_formated_time(self.want_shutdown_after)} ')
+
+    def test_button(self):
+        self.signals.test_button.emit()
 
     def show(self):
         self.ui.show()

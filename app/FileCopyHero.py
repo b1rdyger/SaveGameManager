@@ -68,9 +68,8 @@ class FileCopyHero:
 
     # just save everything everywhere without worrying about the config
     def full_backup(self):
-        self.console_log('Full backup')
         files_in_save = os.listdir(self.save_from)
-        if files_in_save not in [None, '']:
+        if files_in_save in [None, '']:
             self.backup_files(files_in_save)
 
     def callback_file_created(self, filename: str):
@@ -106,7 +105,7 @@ class FileCopyHero:
         files = list(filter(os.path.isfile, glob.glob(str(first_backup_block.path) + "\\*")))
         files = list(map(lambda f: {'file': f, 'mtime': os.path.getmtime(f)}, files))
         files = sorted(files, key=lambda d: d['mtime'], reverse=True)
-        split_dt = 59
+        split_dt = 60
         dts = (d0['mtime']-d1['mtime'] for d0, d1 in zip(files, files[1:]))
         split_at = [i for i, dt in enumerate(dts, 1) if dt >= split_dt]
         groups = [files[i:j] for i, j in zip([0]+split_at, split_at+[None])]
@@ -118,23 +117,21 @@ class FileCopyHero:
                 if exclude_observer:
                     if filename.__contains__(savegame_filename_only):
                         while self.is_file_in_use(f'{self.save_from}{os.sep}{savegame_filename_only}'):
-                            # self.console_log(f'[error: File "{savegame_filename_only}"] in use, waiting')
                             self.signals.cannot_use.emit(savegame_filename_only)
                             time.sleep(0.1)
                         os.remove(f'{self.save_from}{os.sep}{savegame_filename_only}')
                         self.last_saved_or_restored_filename = f'{savegame_filename_only}'
-                        self.signals.renamed.emit(self.last_saved_or_restored_filename) #TODO: fix me, "]" wird falsch interpretiert!!
+                        self.signals.renamed.emit(self.last_saved_or_restored_filename)
                         continue
                     else:
                         os.rename(f'{self.save_from}{os.sep}{savegame_filename_only}', f'{self.save_from}{os.sep}[Recovery]-{savegame_filename_only}')
-                        self.last_saved_or_restored_filename = f'[Recovery]-{savegame_filename_only}' #TODO: fix me, "]" wird falsch interpretiert!!
+                        self.last_saved_or_restored_filename = f'[Recovery]-{savegame_filename_only}'
                         self.signals.renamed.emit(self.last_saved_or_restored_filename)
                 else:
                     shutil.copy2(f'{savegame["file"]}', f'{self.save_from}')
                     self.last_saved_or_restored_filename = savegame_filename_only
                     self.signals.restored.emit(savegame_filename_only)
             except Exception as e:
-
                 self.signals.not_restored.emit(savegame_filename_only)
                 logging.exception(e)
 
@@ -155,7 +152,7 @@ class FileCopyHero:
                         time.sleep(0.1)
                     os.remove(f'{self.save_from}{os.sep}{file}')
                     self.signals.backuped_up_file.emit(file)
-
+        self.signals.backup_successful.emit()
 
     def backup_for_symlink(self) -> bool:
         first_backup_path = next(iter(self.save_to_list or []), None)

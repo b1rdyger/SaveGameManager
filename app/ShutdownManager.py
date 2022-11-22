@@ -34,6 +34,12 @@ class ShutdownManager(QObject):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.__check_shutdown)
         self.timer.setInterval(10000)
+        self.signals.test_button.connect(self.test_button)
+
+    def test_button(self):
+        self.signals.shutdown_wait_for_backup.emit()
+        self.engine_signals.want_shutdown_asap.emit(True)
+        self.timer.stop()
 
     def set_shutdown_after_kill(self, shutdown_after_kill: bool):
         self.__shutdown_after_kill = shutdown_after_kill
@@ -43,6 +49,7 @@ class ShutdownManager(QObject):
 
     def __stop_timer(self):
         self.timer.stop()
+        self.engine_signals.want_shutdown_asap.emit(False)
         with contextlib.suppress(Exception):
             os.system('shutdown /a')
 

@@ -11,3 +11,4 @@ class LTSignals(SGMSignalObjects):
     shutdown_initiated = pyqtSignal(datetime)
     shutdown_wait_for_backup = pyqtSignal()
     shutdown_abort = pyqtSignal()
+    test_button = pyqtSignal()

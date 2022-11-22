@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QDial, QPushButton, QLabel, QLCDNumber
+from PyQt6.QtWidgets import QWidget, QLabel, QLCDNumber
 
 from app.uiInterfaces.QClazzes import QPushButtonClazz, QDialClazz
 from app.uiInterfaces.SaveGameManagerUi import SaveGameManagerUi
@@ -13,3 +13,4 @@ class LogoffTimerUi(QWidget):
     btn_cancel_timer: QPushButtonClazz
     btn_quit_timer: QPushButtonClazz
     logoff_ic: QLCDNumber
+    btn_test_function: QPushButtonClazz
