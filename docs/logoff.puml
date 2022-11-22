@@ -1,0 +1,42 @@
+@startuml
+
+== timer set ==
+
+participant LogoffTimerQt
+participant ShutdownManager
+control Engine
+participant FileCopyHero
+entity Game
+participant ProcessChecker
+activate Game #0f0
+
+LogoffTimerQt -> ShutdownManager: setTimer
+ShutdownManager -> ShutdownManager: interval check
+note right of ShutdownManager
+once the logoff time is reached
+end note
+
+ShutdownManager -> Engine: want_shutdown_asap
+activate Engine #a20
+note over FileCopyHero
+periodic saving
+by the game
+end note
+
+FileCopyHero <-- Game: save
+FileCopyHero --> Engine: backup
+Engine -> ShutdownManager: backup_done_shutdown_allowed
+
+deactivate Engine
+
+ShutdownManager -> Game: kill process
+destroy Game
+
+Game --\\ ProcessChecker: impact
+note over ProcessChecker
+periodic checking
+process state
+end note
+ProcessChecker --> ShutdownManager: running FALSE
+
+@enduml

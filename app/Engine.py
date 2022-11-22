@@ -16,7 +16,7 @@ class Engine(QObject):
     root_dir = None
     config = None
     hidden_tag_file = '.tag-ram'
-    want_shutdown = False
+    want_shutdown_after_next_backup = False
     mfs = None
 
     def __init__(self, root_dir):
@@ -27,7 +27,7 @@ class Engine(QObject):
         self.signals = EngineSignals()
         self.fch_signals = FCHSignals()
         self.mfs_signals = MFSSignals()
-        self.shutdown_manager = ShutdownManager()
+        self.shutdown_manager = ShutdownManager(self.config)
 
         self.fch = FileCopyHero(self.hidden_tag_file,
                                 self.config['ignored_files'], self.config['compressed_save'])
@@ -41,7 +41,9 @@ class Engine(QObject):
         self.pc = ProcessChecker(self.config['process_name'])
 
         self.fch_signals.backup_successful.connect(self.backup_saved)
-        self.signals.want_shutdown.connect(self.set_want_shutdown)
+        self.signals.want_shutdown_asap.connect(self.set_want_shutdown)
+
+        self.shutdown_manager.set_shutdown_after_kill(True)  # todo nur wenn enabled in config oder QT Menu Checkbox
 
     def set_write_callback(self, msg_box):
         self.fch.set_console_write_callback(msg_box.write)
@@ -60,12 +62,12 @@ class Engine(QObject):
 
     @pyqtSlot()
     def backup_saved(self):
-        if self.want_shutdown:
-            self.signals.shutdown_allowed.emit()
+        if self.want_shutdown_after_next_backup:
+            self.signals.backup_done_shutdown_allowed.emit()
 
     @pyqtSlot(bool)
     def set_want_shutdown(self, var):
-        self.want_shutdown = var
+        self.want_shutdown_after_next_backup = var
 
     # engine thread
     @pyqtSlot()
@@ -87,7 +89,3 @@ class Engine(QObject):
 
     def load_profile(self):
         self.profiles = self.config['profiles']
-
-
-
-

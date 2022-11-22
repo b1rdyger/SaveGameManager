@@ -34,7 +34,6 @@ class LogoffTimerQt(QWidget):
         self.ui.logoff_dial.valueChanged.connect(self.dial_value_changed)
         self.dial_value_changed(0)
 
-
     def get_minutes(self, value=None):
         if value is None:
             value = self.ui.logoff_dial.value()
@@ -46,7 +45,8 @@ class LogoffTimerQt(QWidget):
         self.ui.logoff_ic.display(minutes_in_future)
         self.want_shutdown_after = datetime.datetime.now()
         self.want_shutdown_after = self.want_shutdown_after + datetime.timedelta(seconds=real_minutes_in_future * 60)
-        self.ui.logoff_time_status.setText(f'Possible logofftime: {DateUtils.get_formated_time(self.want_shutdown_after)} ')
+        self.ui.logoff_time_status.setText(
+            f'Possible logofftime: {DateUtils.get_formated_time(self.want_shutdown_after)} ')
 
     def show(self):
         self.ui.show()
@@ -58,7 +58,6 @@ class LogoffTimerQt(QWidget):
         self.shutdown_after = self.want_shutdown_after
         self.ui.logoff_time_status.setText(f'Time was set to {DateUtils.get_formated_time(self.shutdown_after)}')
         self.signals.timer_set.emit(self.shutdown_after)
-
 
     def logoff_cancel_timer(self):
         self.shutdown_after = None

@@ -171,6 +171,7 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.action_config.triggered.connect(self.open_profile_selector_window)
         self.action_open_savegame_folder.triggered.connect(lambda: os.startfile(self.config['common_save_dir']))
         self.action_exit.triggered.connect(self.close)
+
     def bind_sgm_emits(self):
         self.signals.run_engine.connect(self.engine.run)
         self.signals.stop_engine.connect(self.engine.stop)
