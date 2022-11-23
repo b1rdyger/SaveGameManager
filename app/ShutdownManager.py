@@ -56,7 +56,7 @@ class ShutdownManager(QObject):
     def __check_shutdown(self):
         if datetime.now() >= self.logoff_time:
             self.signals.shutdown_wait_for_backup.emit()  # just console log
-            self.engine_signals.want_shutdown_asap.emit()
+            self.engine_signals.want_shutdown_asap.emit(True)
             self.timer.stop()
 
     @pyqtSlot()
