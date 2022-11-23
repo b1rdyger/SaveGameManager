@@ -20,21 +20,19 @@ class SaveToBlock:
     cap_size_mb: int = 0
     tpe: str = 'auto'
 
-
 class FileCopyHero:
 
     save_from: str = None
     save_to_list: list[SaveToBlock] = []
     log: callable = None
     last_saved_or_restored_filename: str = None
+    observer_running: bool = True
 
     def __init__(self, hidden_tag_file, ignored_files, compressed_save):
         self.hidden_tag_file = hidden_tag_file
         self.ignored_files = ignored_files
         self.compressed_save = compressed_save
-
         self.signals = FCHSignals()
-
         self.fco = FileCreatedObserver(self.callback_file_created)
         self.fco_thread = QThread()
         self.fco.moveToThread(self.fco_thread)
@@ -44,6 +42,9 @@ class FileCopyHero:
     def bind_engine_emits(self):
         self.signals.start_observer.connect(self.fco.start)
         self.signals.stop_observer.connect(self.fco.stop)
+        # self.signals.change_running_stage
+
+
 
     def set_console_write_callback(self, write_callback: callable):
         self.log = write_callback
@@ -73,11 +74,12 @@ class FileCopyHero:
             self.backup_files(files_in_save)
 
     def callback_file_created(self, filename: str):
-        is_ignored = len([i for i in [re.search(x, filename) for x in self.ignored_files] if i is not None]) > 0
-        if filename.startswith('[Recovery]-'):
-            self.restore_last_save_from_backup(True, filename)
-        if not is_ignored:
-            self.smart_backup()
+        if self.observer_running:
+            is_ignored = len([i for i in [re.search(x, filename) for x in self.ignored_files] if i is not None]) > 0
+            if filename.startswith('[Recovery]-'):
+                self.restore_last_save_from_backup(True, filename)
+            if not is_ignored:
+                self.smart_backup()
 
     # save everything everywhere according to the configuration
     def smart_backup(self, tryy=0) -> bool:

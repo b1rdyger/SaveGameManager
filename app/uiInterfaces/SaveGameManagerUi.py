@@ -6,6 +6,8 @@ from app.uiInterfaces.QClazzes import QPushButtonClazz, QActionClazz
 
 class SaveGameManagerUi(QMainWindow):
     action_config: QActionClazz
+    action_set_observer_state: QActionClazz
+    action_use_ramdrive: QActionClazz
     action_open_savegame_folder: QActionClazz
     action_exit: QActionClazz
     menubar: QMenuBar

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>564</width>
+    <width>618</width>
     <height>400</height>
    </rect>
   </property>
@@ -399,7 +399,7 @@
           <widget class="SGMTextBrowser" name="msg_box">
            <property name="styleSheet">
             <string notr="true">color: rgb(255, 255, 255);
-background-color: rgb(0, 0, 0);</string>
+             background-color: rgb(0, 0, 0);</string>
            </property>
            <property name="verticalScrollBarPolicy">
             <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -415,6 +415,7 @@ background-color: rgb(0, 0, 0);</string>
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;             &lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="textInteractionFlags">
@@ -434,7 +435,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>564</width>
+     <width>618</width>
      <height>21</height>
     </rect>
    </property>
@@ -442,7 +443,6 @@ p, li { white-space: pre-wrap; }
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="action_config"/>
     <addaction name="action_open_savegame_folder"/>
     <addaction name="action_exit"/>
    </widget>
@@ -451,7 +451,16 @@ p, li { white-space: pre-wrap; }
      <string>About</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuConfig_2">
+    <property name="title">
+     <string>Config</string>
+    </property>
+    <addaction name="action_config"/>
+    <addaction name="action_use_ramdrive"/>
+    <addaction name="action_set_observer_state"/>
+   </widget>
    <addaction name="menu_file"/>
+   <addaction name="menuConfig_2"/>
    <addaction name="menu_about"/>
   </widget>
   <action name="action_exit">
@@ -459,14 +468,41 @@ p, li { white-space: pre-wrap; }
     <string>Exit</string>
    </property>
   </action>
-  <action name="action_config">
-   <property name="text">
-    <string>Config</string>
-   </property>
-  </action>
   <action name="action_open_savegame_folder">
    <property name="text">
     <string>Open Savegame Folder</string>
+   </property>
+  </action>
+  <action name="action_stop_observer">
+   <property name="text">
+    <string>Stop Observer</string>
+   </property>
+  </action>
+  <action name="action_config">
+   <property name="text">
+    <string>Profile</string>
+   </property>
+  </action>
+  <action name="action_set_observer_state">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Observer</string>
+   </property>
+  </action>
+  <action name="action_use_ramdrive">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use Ramdrive</string>
    </property>
   </action>
  </widget>

@@ -9,3 +9,6 @@ class EngineSignals(SGMSignalObjects):
     engine_started = pyqtSignal()
     check_safegame_folder = pyqtSignal(str)
     folder_found = pyqtSignal(str)
+    set_observer_state = pyqtSignal(bool)
+    set_ramdrive_state = pyqtSignal(bool)
+    can_be_closed = pyqtSignal()

@@ -44,6 +44,8 @@ class Engine(QObject):
         self.signals.want_shutdown_asap.connect(self.set_want_shutdown)
 
         self.shutdown_manager.set_shutdown_after_kill(True)  # todo nur wenn enabled in config oder QT Menu Checkbox
+        self.signals.set_observer_state.connect(self.set_observer_state)
+        self.signals.set_ramdrive_state.connect(self.set_ramdrive_state)
 
     def set_write_callback(self, msg_box):
         self.fch.set_console_write_callback(msg_box.write)
@@ -59,6 +61,20 @@ class Engine(QObject):
                 os.rmdir(savegame_path)
             os.mkdir(savegame_path)
         self.signals.folder_found.emit(savegame_path)
+
+    @pyqtSlot(bool)
+    def set_observer_state(self, boolean):
+        self.fch.observer_running = boolean
+
+    @pyqtSlot(bool)
+    def set_ramdrive_state(self, state):
+        self.fch.observer_running = False
+        if not state:
+            self.mfs.stop()
+        else:
+            self.mfs.create_or_just_get()
+            self.mfs.create_symlink()
+        self.fch.observer_running = True
 
     @pyqtSlot()
     def backup_saved(self):
@@ -86,6 +102,7 @@ class Engine(QObject):
         self.fch.stop_observer()
         if self.mfs:
             self.mfs.stop()
+            self.signals.can_be_closed.emit()
 
     def load_profile(self):
         self.profiles = self.config['profiles']

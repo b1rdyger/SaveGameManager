@@ -169,8 +169,16 @@ class SaveGameManagerQt(SaveGameManagerUi):
         self.btn_exit.clicked.connect(self.close)
         self.btn_logoff_timer.clicked.connect(self.open_logoff_timer_window)
         self.action_config.triggered.connect(self.open_profile_selector_window)
+        self.action_set_observer_state.triggered.connect(self.set_observer_state)
+        self.action_use_ramdrive.triggered.connect(self.set_ramdrive_state)
         self.action_open_savegame_folder.triggered.connect(lambda: os.startfile(self.config['common_save_dir']))
         self.action_exit.triggered.connect(self.close)
+
+    def set_ramdrive_state(self, action: bool):
+        self.engine_signals.set_ramdrive_state.emit(action)
+
+    def set_observer_state(self, action: bool):
+        self.engine_signals.set_observer_state.emit(action)
 
     def bind_sgm_emits(self):
         self.signals.run_engine.connect(self.engine.run)
@@ -182,10 +190,11 @@ class SaveGameManagerQt(SaveGameManagerUi):
 
     def bind_rest_emits(self):
         self.mfs_signals.driveCreated.connect(self.ram_disk_mounted)
+        self.mfs_signals.driveDestroyed.connect(self.ram_disk_unmounted)
         self.mfs_signals.symlinkCreated.connect(lambda: self.arrow_to_ramdrive(True))
         self.mfs_signals.symlinkRemoved.connect(lambda: self.arrow_to_ramdrive(False))
         self.pc_signals.running.connect(self.change_game_info_panel)
-        self.mfs_signals.cleanedUp.connect(self.is_cleaned_up)
+        self.engine_signals.can_be_closed.connect(self.is_cleaned_up)
 
     def open_profile_selector_window(self):
         self.open_profile_selector.ui.show()
@@ -229,6 +238,9 @@ class SaveGameManagerQt(SaveGameManagerUi):
     @pyqtSlot()
     def ram_disk_mounted(self):
         self.memory_save_game.setStyleSheet("QLabel { background-color : lime; color : black; }")
+
+    def ram_disk_unmounted(self):
+        self.memory_save_game.setStyleSheet("QLabel { background-color : red; color : black; }")
 
     def start_engine(self):
         self.signals.run_engine.emit()

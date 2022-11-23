@@ -28,6 +28,8 @@ class SignalMemory(QObject):
                 return self.parse
             case ['PyQt_PyObject']:
                 return self.parse_datetime
+            case ['bool']:
+                return self.parse_bool
             case _:
                 raise NotImplementedError('No pyqtSlot for signature ' + str(self.slot))
 
@@ -43,6 +45,11 @@ class SignalMemory(QObject):
     def parse_datetime(self, q_datetime: str):
         self.message_box.write(self.message.replace('{datetime}', DateUtils.get_formated_time(q_datetime)),
                                self.merge_lines)
+
+    @pyqtSlot(bool)
+    def parse_bool(self, boolean):
+        bool_text = 'activated' if boolean else 'deactivated'
+        self.message_box.write(self.message.replace('{state}', bool_text), self.merge_lines)
 
 
 class MessageByEvent(QObject):
@@ -73,7 +80,8 @@ class MessageByEvent(QObject):
 
         # mfs_signals
         self.universal_bind(self.mfs_signals.symlinkCreated, '[[success:Symlink created]]')
-        self.universal_bind(self.mfs_signals.driveCreated, '[[success:Drive]] [[info:"{str}:"]] [[success:created]]')
+        self.universal_bind(self.mfs_signals.cleanedUp, '[[success:Ram-Drive Disabled]]')
+        self.universal_bind(self.mfs_signals.driveCreated, '[[success:Ram-Drive]] [[info:"{str}:"]] [[success:created]]')
         self.universal_bind(self.mfs_signals.folder_not_found, '[[error:Folder "{str}"]] not found! Try to create it')
         self.universal_bind(self.mfs_signals.folder_created, '[[success:Folder "{str}"]] created')
         self.universal_bind(self.mfs_signals.folder_not_empty, '[[error:Folder "{str}"]] not empty!')
@@ -97,6 +105,9 @@ class MessageByEvent(QObject):
         self.universal_bind(self.fch_signals.backuped_up_file, '[[success:File "{str}" backed up]]')
         self.universal_bind(self.fch_signals.smart_backup_finished,
                             '[[error:Smart backup fehlgeschlagen! Bitte manuelles Backup vornehmen!]]')
+        self.universal_bind(self.fch_signals.start_observer, '[[success:Start Observer]]')
+        self.universal_bind(self.fch_signals.stop_observer, '[[error:Stop Observer]]')
+        self.universal_bind(self.engine_signals.set_observer_state, '[[highlighted:Observer changed to "{state}"]]')
 
     def universal_bind(self, fn, msg, merge_lines=True):
         f, m, p = self.extract_emitter(fn)

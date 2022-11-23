@@ -31,4 +31,29 @@ Engine --> FileCopyHero: inform about new RAM-Drive
 FileCopyHero -> FileCopyHero: symlink logik (backup)
 FileCopyHero -> Engine: done
 
+note over FileCopyHero
+Disable Ram-Drive
+end note
+Window -> Engine: Disable Ram-Drive
+Engine -> FileCopyHero: Pause Observer
+Engine -> MemoryFileSystem: Disable RAM-Drive
+MemoryFileSystem -> Engine: Ram-Drive is Disabled
+Engine -> FileCopyHero: Unpause Observer
+note over FileCopyHero
+Enable Ram-Drive
+end note
+Window -> Engine: Enable Ram-Drive
+Engine -> FileCopyHero: Pause Observer
+Engine -> MemoryFileSystem: Enable RAM-Drive
+Engine -> MemoryFileSystem: Create Symlink
+MemoryFileSystem --> Engine: Ram-Drive is Enabled
+Engine -> FileCopyHero: Unpause Observer
+
+== Observer ==
+Window -> Engine: set_observer_state(True)
+Engine -> FileCopyHero: is_running=True
+
+Window -> Engine: set_observer_state(False)
+Engine -> FileCopyHero: is_running=False
+
 @enduml
